@@ -4,14 +4,8 @@ object TLEConstants {
 
   val ONE_THIRD = 1.0 / 3.0
   val TWO_THIRD = 2.0 / 3.0
-
-  /** Earth radius in km. */
-  val EARTH_RADIUS = 6378.135
-
-  /** Equatorial radius rescaled (1.0). */
+  val EARTH_RADIUS = 6378.135  // km
   val NORMALIZED_EQUATORIAL_RADIUS = 1.0
-
-  /** Time units per julian day. */
   val MINUTES_PER_DAY = 1440.0
 
   // Potential perturbation coefficients

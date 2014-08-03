@@ -56,12 +56,11 @@ trait TLE {
   def tval = CK2 * 1.5 * x3thm1 / (beta0 * beta02)
   def delta1 = tval/(a1 * a1)
   
-  /** the original semimajor axis */
+  // original semimajor axis
   def a0 = a1 * (1 - delta1 * (ONE_THIRD + delta1 * (1.0 + 134.0/81.0 * delta1)))
   
   def delta0 = tval/(a0 * a0)
-  /** the original mean motion */
-  def xn0dp = xno /(delta0 + 1)
+  def xn0dp = xno /(delta0 + 1)   // the original mean motion
    
   // Select a deep-space/near-earth ephemeris 
   def isDeepSpacePeriod : Boolean = (2*Pi / (xn0dp * MINUTES_PER_DAY)) >= (1.0 / 6.4)
@@ -154,13 +153,7 @@ object TLE {
         )
     }
  
-  
-    /** Check the lines format validity.
-     * @param line1 the first element
-     * @param line2 the second element
-     * @return true if format is recognized (non null lines, 69 characters length,
-     * line content), false if not
-     */
+
     def isFormatOK(line1: String, line2: String) : Boolean = {
         if (line1 == null || line1.length() != 69 ||
             line2 == null || line2.length() != 69 ||   
@@ -180,10 +173,6 @@ object TLE {
         true
     }
 
-    /** Compute the checksum of the first 68 characters of a line.
-     * @param line line to check
-     * @return checksum
-     */
     def checksum(line: String): Int = {
         var sum: Int = 0
         for (j <- 0 until 68) {

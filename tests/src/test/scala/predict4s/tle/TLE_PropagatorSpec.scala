@@ -53,7 +53,7 @@ class TLE_PropagatorSpec extends FunSuite
     assert(finalState.a === 1.118136309343834, " a ")
     assert(finalState.e === 0.008415889590488213, " e ") // 0.008415889602669875?
     assert(finalState.i === 1.7113843433722917, " i ") // 1.7113843433722922	?
-    assert(finalState.node === 2.102070472241324, " raan ") // 2.07534657893693?
+    assert(finalState.raan === 2.102070472241324, " raan ") // 2.07534657893693?
     assert(finalState.xl === 155.4441131488079, " vernal equinox")  // 155.47483697687704?
     assert(finalState.omega === 5.425763790324253, " omega ")
 

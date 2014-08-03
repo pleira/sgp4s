@@ -2,8 +2,9 @@ package predict4s
 
 import scala.concurrent.duration._
 
+// TODO: have radians
 case class KeplerCoord[F <: Double](
-  val node : F,   //  RAAN (rad)
+  val raan : F,   //  RAAN (rad)
   val a : F,      //  semi major axis
   val e : F,      //  eccentricity
   val i : F,      //  inclination
@@ -11,12 +12,10 @@ case class KeplerCoord[F <: Double](
   val xl : F      //  direction of vernal equinox, L from SPTRCK #3 
 ) {
   def ω = omega 
-  override def toString = s"a: $a, e: $e, i: $i, raan: $node, omega: $ω, vernal equinox: $xl"
+  override def toString = s"a: $a, e: $e, i: $i, raan: $raan, omega: $ω, vernal equinox: $xl"
 }
 
 object OrbitPropagator {
-  type OrbitalElements = KeplerCoord[Double] 
-  type KC = KeplerCoord[Double]
   type Vector3D = Vector[Double]
   type Position = Vector3D
   type Velocity = Vector3D
