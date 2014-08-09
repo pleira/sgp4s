@@ -2,7 +2,11 @@ package predict4s.tle
 
 import predict4s._
 import scala.concurrent.duration._
-import scala.math._
+//import scala.math._
+import spire.math._
+import spire.implicits._
+// import spire.algebra._
+//import spire.optional.unicode.π
 import scala.{ specialized => spec }
 
 class SGP4(tle: TLE) extends TLEPropagator(tle) {

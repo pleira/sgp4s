@@ -1,7 +1,8 @@
 package predict4s.tle 
 
 import predict4s.tle._
-import scala.math._
+import spire.math._
+import spire.implicits._
 import predict4s._
 
 trait TLEPropagation {

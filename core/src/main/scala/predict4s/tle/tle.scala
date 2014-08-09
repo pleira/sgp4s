@@ -6,7 +6,10 @@ package predict4s.tle {
 
 import java.util.regex.Pattern
 import TLEConstants._
-import scala.math._
+import spire.math._
+import spire.implicits._
+//import spire.optional.unicode.π
+
 import predict4s.KeplerCoord
 import predict4s.Predict4sException
 
@@ -33,14 +36,14 @@ trait TLE {
   def revolutionNumberAtEpoch: Int      
   def bStar: Double                       // ballistic coefficient
   
-  def meanMotion0: Double = (meanMotion / Pi) * 43200.0
+  def meanMotion0: Double = (meanMotion / pi) * 43200.0
   def epoch = 1000.0 * year + refepoch
   def incl : Double = i                   // already in Radians 
   def nodeo : Double = raan               // already Radians
   def omegao : Double = pa                // argper // already Radians 
   def xmo : Double = meanAnomaly          // already in Radians
 //  def nddot6 : Double
-//  def xndt2o = drag * 2 * pi / MINUTES_PER_DAY / MINUTES_PER_DAY
+//  def xndt2o = drag * 2 * π / MINUTES_PER_DAY / MINUTES_PER_DAY
   
   // Intermediate values used by the propagator models
   def cosi0 = cos(i)       
@@ -63,7 +66,7 @@ trait TLE {
   def xn0dp = xno /(delta0 + 1)   // the original mean motion
    
   // Select a deep-space/near-earth ephemeris 
-  def isDeepSpacePeriod : Boolean = (2*Pi / (xn0dp * MINUTES_PER_DAY)) >= (1.0 / 6.4)
+  def isDeepSpacePeriod : Boolean = (2*pi / (xn0dp * MINUTES_PER_DAY)) >= (1.0 / 6.4)
   def isDeepSpace : Boolean = isDeepSpacePeriod
   
   // def drag : Double 
@@ -98,7 +101,7 @@ case class TLE0(
 
 object TLE {
     import java.util.regex.Pattern;
-    import scala.math.Pi
+    import spire.math.pi
 
     /** Pattern for line 1. */
     val LINE_1_PATTERN : Pattern =
@@ -130,16 +133,16 @@ object TLE {
         refepoch        = line1.parseDouble(20, 12),
         // mean motion development
         // converted from rev/day, 2 * rev/day^2 and 6 * rev/day^3 to rad/s, rad/s^2 and rad/s^3
-        meanMotion                 = line2.parseDouble(52, 11) * Pi / 43200.0,
+        meanMotion                 = line2.parseDouble(52, 11) * pi / 43200.0,
 //        drag                       = line1.parseDouble(33, 10),
-        meanMotionFirstDerivative  = line1.parseDouble(33, 10) * Pi / 1.86624e9,
+        meanMotionFirstDerivative  = line1.parseDouble(33, 10) * pi / 1.86624e9,
 //        nddot6                     = ((line1.substring(44, 45) + '.' +
 //                                     line1.substring(45, 50) + 'e' +
 //                                     line1.substring(50, 52)).replace(' ', '0')).toDouble,
         meanMotionSecondDerivative = ((line1.substring(44, 45) + '.' +
                                      line1.substring(45, 50) + 'e' +
                                      line1.substring(50, 52)).replace(' ', '0')).toDouble *
-                                     Pi / 5.3747712e13,
+                                     pi / 5.3747712e13,
         e = ("." + line2.substring(26, 33).replace(' ', '0')).toDouble,
         i = line2.parseDouble(8, 8).toRadians,
         pa           = line2.parseDouble(34, 8).toRadians,
