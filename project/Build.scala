@@ -17,7 +17,10 @@ import sbtbuildinfo.Plugin._
 object MyBuild extends Build {
 
   // Dependencies
-
+  
+  lazy val scalazCore = "org.scalaz" %% "scalaz-core" % "7.0.6"
+  lazy val scalazGeo = "org.scalaz" %% "scalaz-geo" % "6.0.4"
+  lazy val spireMath = "org.spire-math" %% "spire" % "0.8.2"
   lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.1.3"
   lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.11.3"
 
@@ -50,16 +53,16 @@ object MyBuild extends Build {
   override lazy val settings = super.settings ++ Seq(
     organization := "com.pitagoral.sgp4s",
 
-    scalaVersion := "2.10.2",
+    scalaVersion := "2.10.4",
 
-    crossScalaVersions := Seq("2.10.2", "2.11.1"),
+    crossScalaVersions := Seq("2.10.4", "2.11.1"),
 
     licenses := Seq("BSD-style" -> url("http://opensource.org/licenses/MIT")),
     homepage := Some(url("http://www.pitagoral.com")),
 
-//    libraryDependencies ++= Seq(
+    libraryDependencies ++= Seq(
 //      "org.scala-lang" % "scala-reflect" % scalaVersion.value
-//    ),
+    ),
 
     scalacOptions ++= Seq(
       //"-no-specialization", // use this to build non-specialized jars
@@ -108,7 +111,7 @@ object MyBuild extends Build {
   <developer>
     <id>pleira</id>
     <name>Pablo Pita</name>
-    <url>http://github.com/non/</url>
+    <url>http://github.com/pleira/</url>
   </developer>
 </developers>
     )
@@ -148,6 +151,12 @@ object MyBuild extends Build {
   lazy val coreSettings = Seq(
     name := "sgp4s",
     libraryDependencies ++= Seq(
+   "org.scalaz" %% "scalaz-core" % "7.0.6",
+   "org.scalaz" %% "scalaz-geo" % "6.0.4",
+   "org.spire-math" %% "spire" % "0.8.2",
+      scalazCore % "compile",
+      scalazGeo % "compile",
+      spireMath % "compile",
       scalaCheck % "test",
       scalaTest % "test"
     )
