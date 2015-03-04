@@ -18,9 +18,7 @@ object MyBuild extends Build {
 
   // Dependencies
   
-  lazy val scalazCore = "org.scalaz" %% "scalaz-core" % "7.0.6"
-  lazy val scalazGeo = "org.scalaz" %% "scalaz-geo" % "6.0.4"
-  lazy val spireMath = "org.spire-math" %% "spire" % "0.8.2"
+  lazy val spireMath = "org.spire-math" %% "spire" % "0.9.1"
   lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.1.3"
   lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.11.3"
 
@@ -51,11 +49,11 @@ object MyBuild extends Build {
   // Settings
 
   override lazy val settings = super.settings ++ Seq(
-    organization := "com.pitagoral.sgp4s",
+    organization := "sgp4s",
 
-    scalaVersion := "2.10.4",
+    scalaVersion := "2.11.4",
 
-    crossScalaVersions := Seq("2.10.4", "2.11.1"),
+    crossScalaVersions := Seq("2.10.4", "2.11.4"),
 
     licenses := Seq("BSD-style" -> url("http://opensource.org/licenses/MIT")),
     homepage := Some(url("http://www.pitagoral.com")),
@@ -151,11 +149,7 @@ object MyBuild extends Build {
   lazy val coreSettings = Seq(
     name := "sgp4s",
     libraryDependencies ++= Seq(
-   "org.scalaz" %% "scalaz-core" % "7.0.6",
-   "org.scalaz" %% "scalaz-geo" % "6.0.4",
-   "org.spire-math" %% "spire" % "0.8.2",
-      scalazCore % "compile",
-      scalazGeo % "compile",
+   "org.spire-math" %% "spire" % "0.9.1",
       spireMath % "compile",
       scalaCheck % "test",
       scalaTest % "test"

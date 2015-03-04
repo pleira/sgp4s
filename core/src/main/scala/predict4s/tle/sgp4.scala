@@ -1,7 +1,6 @@
 package predict4s.tle
 
 import predict4s._
-import scala.concurrent.duration._
 //import scala.math._
 import spire.math._
 import spire.implicits._
@@ -87,7 +86,7 @@ class SGP4(tle: TLE) extends TLEPropagator(tle) {
     val xn = KE / pow(a, 1.5)
     val xl = xmp + omega + xnode + xn0dp * templ
 
-    KeplerCoord(xnode, a, e_new, i, omega, xl)
+    KeplerCoord[Double](xnode, a, e_new, i, omega, xl)
   }
 
 }
