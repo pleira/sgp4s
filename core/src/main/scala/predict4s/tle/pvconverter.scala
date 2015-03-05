@@ -1,6 +1,5 @@
 package predict4s.tle
 import predict4s._
-import predict4s.OrbitPropagator._
 import predict4s.tle.TLEConstants._
 import spire.math._
 import spire.implicits._
@@ -11,14 +10,12 @@ import predict4s.KeplerCoord
 object PVConverter {
   
   def apply(p : KeplerCoord[Double]) = coord(p)
-		  
-  type F = Fractional[Double]
-		  
+		  	  
   // TODO: away with this method by having degrees and radians
   private def normalizeAngle(a : Double, center: Double) : Double = 
      a - 2*pi * floor((a + pi - center) / (2* pi))
 
-  private def coord(kc: KeplerCoord[Double]): (Position, Velocity)  = {
+  private def coord(kc: KeplerCoord[Double]): (Vector[Double], Vector[Double])  = {
     import kc._
     // implicit def DoubleRadians: Radians[Double] = radians(_ * spire.math.Pi / 180, _ * 180 / scala.math.Pi)
     val sini0 = sin(i)

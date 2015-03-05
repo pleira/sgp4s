@@ -1,13 +1,15 @@
 package predict4s.tle
 import org.scalatest._
 import org.scalautils.TolerantNumerics
-import predict4s.Predict4sException
+//import predict4s.Predict4sException
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
-import predict4s.tle.TLEPropagator._
-import predict4s.tle.PVConverter._
-import predict4s.OrbitPropagator.Velocity
-import predict4s.OrbitPropagator.Position
+//import predict4s.tle.TLEPropagator._
+//import predict4s.tle.PVConverter._
+//import predict4s.OrbitPropagator.Velocity
+//import predict4s.OrbitPropagator.Position
+import predict4s.tle.TLE
+import predict4s.tle.SGP4
 
 class Official_TLE_Spec extends FunSuite
   with BeforeAndAfterAll
@@ -23,7 +25,7 @@ class Official_TLE_Spec extends FunSuite
 //  needed for 1440 min  
 //    implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
  
-  val expectedSGP4 : Map[Int, (Position,Velocity)] = 
+  val expectedSGP4 : Map[Int, (Vector[Double],Vector[Double])] = 
     Map(0 -> (Vector(2328.97048951,   -5995.22076416,    1719.97067261),
               Vector(  2.91207230,     -0.98341546,     -7.09081703)),
      360 -> (Vector(2456.10705566,   -6071.93853760,    1222.89727783),
@@ -45,7 +47,7 @@ class Official_TLE_Spec extends FunSuite
     assert(TLE.isFormatOK(tle_11, tle_12))
   }
  
-  def check(result: (Position, Velocity), expected: (Position, Velocity))
+  def check(result: (Vector[Double],Vector[Double]), expected: (Vector[Double],Vector[Double]))
      (implicit ev: org.scalautils.Equality[Double]) {
 //    can we have tolerance for container comparisons?
 //    result._1 should === (expected._1)
@@ -59,7 +61,7 @@ class Official_TLE_Spec extends FunSuite
     assert(!tle.isDeepSpace)
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
     expectedSGP4.keys foreach {min => 
-      check(PVConverter(tle.propagate(Duration(min, TimeUnit.MINUTES))), expectedSGP4(min)) }
+      check(PVConverter((new SGP4(tle)).propagate(Duration(min, TimeUnit.MINUTES))), expectedSGP4(min)) }
   }
              
 }
