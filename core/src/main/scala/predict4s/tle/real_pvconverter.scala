@@ -1,14 +1,10 @@
 package predict4s.tle
 import predict4s._
-//import predict4s.OrbitPropagator._
 import predict4s.tle.TLEConstants._
 import spire.math._
 import spire.algebra.Order
-//import spire.algebra.Order._
 
 import spire.implicits._
-// import spire.algebra._
-//import spire.optional.unicode.π
 import predict4s.KeplerCoord
 
 object RealPVConverter {

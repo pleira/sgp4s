@@ -1,12 +1,11 @@
 package predict4s.tle
 
 import predict4s.KeplerCoord
-//import scala.math._
 import spire.math._
 import spire.implicits._
 import scala.{ specialized => spec }
 
-class SGP4(tle: TLE) extends TLEPropagator(tle) {
+class RealSGP4(tle: TLE) extends TLEPropagator(tle) {
 
   import TLEConstants._
   import tle._
@@ -45,10 +44,11 @@ class SGP4(tle: TLE) extends TLEPropagator(tle) {
   val c5 = 2 * coef1 * a0dp * beta02 * (1 + 2.75 * (etasq + eeta) + eeta * etasq)
   // initialized
         
-  val temp = Array[Double](9)
+  // val temp = Array[Real](9)
  
 
-  /*override*/ def propagate[T <: { def toMinutes: Long}](duration: T) = {
+//  override def propagate[T <: { def toMinutes: Long}](duration: T) : KeplerCoord[Real] = {
+  def propagate[T <: { def toMinutes: Long}](duration: T) : KeplerCoord[Real] = {
     import scala.language.reflectiveCalls
     val tSince = duration.toMinutes
     // Update for secular gravity and atmospheric drag.
@@ -84,7 +84,7 @@ class SGP4(tle: TLE) extends TLEPropagator(tle) {
     val xn = KE / pow(a, 1.5)
     val xl = xmp + omega + xnode + xn0dp * templ
 
-    KeplerCoord[Double](a, e_new, i, omega, xnode, xl)
+    KeplerCoord[Real](a, e_new, i, omega, xnode, xl)
   }
 
 }

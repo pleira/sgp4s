@@ -1,18 +1,17 @@
 package predict4s.tle 
 
-//import predict4s.tle._
 import spire.math._
 import spire.implicits._
 import predict4s.{Predict4sException,KeplerCoord}
 
-trait TLEPropagation {
-  def propagate[T <: {def toMinutes: Long}](duration: T) : KeplerCoord[Double]
-}
+//trait TLEPropagation[R] {
+//  def propagate[T <: {def toMinutes: Long}](duration: T) : KeplerCoord[R]
+//}
 
 /**
  * Contains the common bits across the TLE propagation
  */
-abstract class TLEPropagator(tle : TLE) extends TLEPropagation { 
+abstract class TLEPropagator[R](tle : TLE)  { 
    import TLEConstants._
    import tle._
 
@@ -81,8 +80,5 @@ abstract class TLEPropagator(tle : TLE) extends TLEPropagation {
     val t2cof = 1.5 * c1
 }
 
-object TLEPropagator {
-  implicit def propagator(tle: TLE) = 
-    if (tle.isDeepSpacePeriod) throw Predict4sException("not supported") else new SGP4(tle) 
-}
+
 
