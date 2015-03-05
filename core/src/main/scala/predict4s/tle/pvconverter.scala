@@ -1,10 +1,7 @@
 package predict4s.tle
-import predict4s._
 import predict4s.tle.TLEConstants._
 import spire.math._
 import spire.implicits._
-// import spire.algebra._
-//import spire.optional.unicode.π
 import predict4s.KeplerCoord
 
 object PVConverter {
@@ -41,7 +38,7 @@ object PVConverter {
     val x1mth2 = 1.0 - cosi0Sq
     val x7thm1 = 7.0 * cosi0Sq - 1.0
     if (e > (1 - 1e-6)) {
-      throw new Predict4sException("TOO_LARGE_ECCENTRICITY_FOR_PROPAGATION_MODEL")
+      throw new predict4s.Predict4sException("TOO_LARGE_ECCENTRICITY_FOR_PROPAGATION_MODEL")
     }
     val newtonRaphsonEpsilon = 1e-12
     for (j <- 0 until 10) {

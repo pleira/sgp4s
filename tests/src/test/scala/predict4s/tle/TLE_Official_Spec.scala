@@ -1,15 +1,8 @@
 package predict4s.tle
 import org.scalatest._
 import org.scalautils.TolerantNumerics
-//import predict4s.Predict4sException
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
-//import predict4s.tle.TLEPropagator._
-//import predict4s.tle.PVConverter._
-//import predict4s.OrbitPropagator.Velocity
-//import predict4s.OrbitPropagator.Position
-import predict4s.tle.TLE
-import predict4s.tle.SGP4
 
 class Official_TLE_Spec extends FunSuite
   with BeforeAndAfterAll

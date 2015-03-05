@@ -8,7 +8,6 @@ import java.util.regex.Pattern
 import TLEConstants._
 import spire.math._
 import spire.implicits._
-//import spire.optional.unicode.π
 
 import predict4s.KeplerCoord
 import predict4s.Predict4sException
