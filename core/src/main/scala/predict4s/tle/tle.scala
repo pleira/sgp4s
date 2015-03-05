@@ -69,7 +69,7 @@ trait TLE {
   def isDeepSpace : Boolean = isDeepSpacePeriod
   
   // def drag : Double 
-  def KC = KeplerCoord[Double](raan, a0, e, i, pa, xn0dp)
+  def KC = KeplerCoord[Double](a0, e, i, pa, raan, xn0dp)
 }
 
 case class TLE0(

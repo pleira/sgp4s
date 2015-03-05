@@ -84,7 +84,7 @@ class SGP4(tle: TLE) extends TLEPropagator(tle) {
     val xn = KE / pow(a, 1.5)
     val xl = xmp + omega + xnode + xn0dp * templ
 
-    KeplerCoord[Double](xnode, a, e_new, i, omega, xl)
+    KeplerCoord[Double](a, e_new, i, omega, xnode, xl)
   }
 
 }
