@@ -54,11 +54,14 @@ class Official_TLE_Spec_Real extends FunSuite
   }
     
   test("Oficial SGP4 Real prediction") {
-    val tle = TLE(tle_11, tle_12)
+    val tle = TLE.buildReal(tle_11, tle_12)
+    val prop = new SGP4(tle)
     assert(!tle.isDeepSpace)
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
+    import spire.implicits._
     expectedSGP4.keys foreach {min => 
-      check(RealPVConverter((new RealSGP4(tle)).propagate(Duration(min, TimeUnit.MINUTES))), expectedSGP4(min)) }
+//      check(RealPVConverter((new RealSGP4(tle)).propagate(Duration(min, TimeUnit.MINUTES))), expectedSGP4(min)) }
+      check(PVConverter[Real](prop.propagate(Duration(min, TimeUnit.MINUTES))), expectedSGP4(min)) }
   }
              
 }

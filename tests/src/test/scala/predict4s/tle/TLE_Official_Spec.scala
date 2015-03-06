@@ -53,8 +53,9 @@ class Official_TLE_Spec extends FunSuite
     val tle = TLE(tle_11, tle_12)
     assert(!tle.isDeepSpace)
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
+    import spire.implicits._
     expectedSGP4.keys foreach {min => 
-      check(PVConverter((new SGP4(tle)).propagate(Duration(min, TimeUnit.MINUTES))), expectedSGP4(min)) }
+      check(PVConverter[Double]((new SGP4(tle).propagate(Duration(min, TimeUnit.MINUTES)))), expectedSGP4(min)) }
   }
              
 }

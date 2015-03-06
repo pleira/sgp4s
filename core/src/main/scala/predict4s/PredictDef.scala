@@ -2,6 +2,7 @@ package predict4s
 
 import spire.math.Fractional
 import spire.algebra.Order
+import spire.algebra.Trig
 import spire.implicits._
 
 /**
@@ -31,7 +32,7 @@ import spire.implicits._
  * @param ν true anomaly [rad]
  * 
  */
-case class KeplerCoord[F : Fractional : Order](
+case class KeplerCoord[F : Fractional: Trig](
   val a : F,      
   val e : F,      
   val i : F,      
@@ -69,7 +70,7 @@ case class KeplerCoord[F : Fractional : Order](
 
   def isHyperbolical = e > 1
   
-  override def toString = s"a: $a, e: $e, i: $i, raan: $raan, omega: $ω, vernal equinox: $xl"
+  override def toString = s"a: $a, e: $e, i: $i, raan: $Ω, ω: $ω, true anomaly: $xl"
 }
 
 case class Predict4sException(msg: String) extends Exception 

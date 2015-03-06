@@ -1,8 +1,12 @@
 package predict4s.tle 
 
+import spire.algebra._
 import spire.math._
 import spire.implicits._
-import predict4s.{Predict4sException,KeplerCoord}
+//import spire.math.Fractional
+//import spire.algebra.Order
+//import spire.algebra.Trig
+//import Predef.{any2stringadd => _, _}
 
 //trait TLEPropagation[R] {
 //  def propagate[T <: {def toMinutes: Long}](duration: T) : KeplerCoord[R]
@@ -11,28 +15,29 @@ import predict4s.{Predict4sException,KeplerCoord}
 /**
  * Contains the common bits across the TLE propagation
  */
-abstract class TLEPropagator[R](tle : TLE)  { 
-   import TLEConstants._
+abstract class TLEPropagator[F: Fractional: Order : Trig](tle : TLE[F])  { 
    import tle._
-
-   val a0dp = a0/(1.0 - delta0)       
+   // FIXME
+   import tle.tlec._
+   
+   val a0dp = a0/(Fractional[F].one - delta0)       
    val perige = (a0dp*(1-e) - NORMALIZED_EQUATORIAL_RADIUS) * EARTH_RADIUS 
     
    // Values of s and qms2t :    
-   val (s4, q0ms24) = 
+   val (s4, q0ms24) : (F, F)= 
      if(perige < 156) {
 	   //  For perigee below 156 km, the values of s and QOMS2T are changed :
-	   val s4t = if (perige <= 98) 20.0 else perige - 78.0
+	   val s4t = if (perige <= 98) Fractional[F].fromInt(20) else perige - Fractional[F].fromInt(78)
 	   val temp_val = (120.0 - s4t) * NORMALIZED_EQUATORIAL_RADIUS / EARTH_RADIUS
 	   val temp_val_squared = temp_val * temp_val
        (s4t / EARTH_RADIUS + NORMALIZED_EQUATORIAL_RADIUS,
        temp_val_squared * temp_val_squared)  // new value for q0ms2T and s
      } else {
         (S,  // unmodified value for s
-        QOMS2T) // unmodified value for q0ms2T 
+         QOMS2T) // unmodified value for q0ms2T 
      }
     
-   val pinv = 1.0 / (a0dp * beta02)
+   val pinv =  1 / (a0dp * beta02)
    val pinvsq = pinv * pinv
    val tsi = 1.0 / (a0dp - s4)
    val eta = a0dp*e*tsi
@@ -41,7 +46,7 @@ abstract class TLEPropagator[R](tle : TLE)  {
 
    val psisq = abs(1-etasq) // abs because pow 3.5 needs positive value
    val coef = q0ms24 * (tsi * tsi * tsi * tsi)
-   val coef1 = coef / pow(psisq,3.5)
+   val coef1 = coef / (psisq pow 3.5)
 
     // C2 and C1 coefficients computation :
     val c2 = coef1 * xn0dp * (a0dp * (1 + 1.5*etasq + eeta * (4 + etasq)) + 
