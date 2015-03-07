@@ -41,19 +41,20 @@ class PVConverter[F: Fractional: Trig]() {
       throw new predict4s.Predict4sException("TOO_LARGE_ECCENTRICITY_FOR_PROPAGATION_MODEL")
     }
     val newtonRaphsonEpsilon = Fractional[F].fromDouble(1e-12)
-    for (j <- 0 until 10) {
+    var idx = 0
+    while (idx < 10) {
       var doSecondOrderNewtonRaphson = true
       sinEPW = sin(epw)
       cosEPW = cos(epw)
       ecosE = axn * cosEPW + ayn * sinEPW
       esinE = axn * sinEPW - ayn * cosEPW
       val f = capu - epw + esinE
-      if (abs(f) < newtonRaphsonEpsilon) {
-        //break
-      }
+//      if (abs(f) < newtonRaphsonEpsilon) {
+//        //break
+//      }
       val fdot = 1 - ecosE
       var delta_epw = f / fdot
-      if (j == 0) {
+      if (idx == 0) {
         val maxNewtonRaphson = 1.25 * abs(e)
         doSecondOrderNewtonRaphson = false
         if (delta_epw > maxNewtonRaphson) {
@@ -68,6 +69,7 @@ class PVConverter[F: Fractional: Trig]() {
         delta_epw = f / (fdot + esinE * delta_epw / 2)
       }
       epw += delta_epw
+      idx += 1
     }
     val pl = a * (1 - elsq)
     val r = a * (1 - ecosE)
@@ -105,7 +107,7 @@ class PVConverter[F: Fractional: Trig]() {
     val v_u = rdotk *: Vector(ux, uy, uz)
     val v_v = rfdotk *: Vector(xmx * cosuk - cosnok * sinuk, xmy * cosuk - sinnok * sinuk,  sinik * cosuk)
     val vel = (EARTH_RADIUS / 60) *: (v_v + v_u) 
-    (pos, vel)    
+    (pos, vel)
   }
   
 }

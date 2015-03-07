@@ -35,10 +35,6 @@ class Official_TLE_Spec extends FunSuite
   val tle_12 = "2 88888  72.8435 115.9689 0086731  52.6988 110.5714 16.05824518   103"
   val tle_21 = "1 11801U          80230.29629788  .01431103  00000-0  14311-1      13"
   val tle_22 = "2 11801  46.7916 230.4354 7318036  47.4722  10.4117  2.28537848    13"
-    
-  test("Official SGP4 TLE Format must be correctly parsed") {
-    assert(TLE.isFormatOK(tle_11, tle_12))
-  }
  
   def check(result: (Vector[Double],Vector[Double]), expected: (Vector[Double],Vector[Double]))
      (implicit ev: org.scalautils.Equality[Double]) {

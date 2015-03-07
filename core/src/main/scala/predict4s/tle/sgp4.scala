@@ -22,13 +22,13 @@ class SGP4[F : Fractional: Trig](tle: TLE[F]) extends TLEPropagator[F](tle) {
   val (d2, d3, d4, t3cof, t4cof, t5cof, omgcof, xmcof, sinM0, delM0) : (F,F,F,F,F,F,F,F,F,F) = 
     if (simple) (0,0,0,0,0,0,0,0,0,0)
     else {
-      val c1sq : F = c1 * c1
-      val _delM0_ : F= 1 + eta * cos(meanAnomaly)
-      val _delM0 : F= _delM0_ * _delM0_ * _delM0_
-      val _d2 : F = 4 * a0dp * tsi * c1sq
-      val temp : F = _d2 * tsi * c1 / 3
-      val _d3 : F = (17 * a0dp + s4) * temp
-      val _d4 : F = temp * a0dp * tsi * (221 * a0dp + 31 * s4) * c1 / 2
+      val c1sq : F   = c1 * c1
+      val _delM0_ : F = 1 + eta * cos(meanAnomaly)
+      val _delM0 : F = _delM0_ * _delM0_ * _delM0_
+      val _d2 : F    = 4 * a0dp * tsi * c1sq
+      val temp : F   = _d2 * tsi * c1 / 3
+      val _d3 : F    = (17 * a0dp + s4) * temp
+      val _d4 : F    = temp * a0dp * tsi * (221 * a0dp + 31 * s4) * c1 / 2
       val _t3cof : F = _d2 + 2 * c1sq
       val _t4cof : F = (3 * _d3 + c1 * (12 * _d2 + 10 * c1sq)) / 4
       val _t5cof : F = (3 * _d4 + 12 * c1 * _d3 + 6 * _d2 * _d2 + 15 * c1sq * (2 * _d2 + c1sq)) / 5
