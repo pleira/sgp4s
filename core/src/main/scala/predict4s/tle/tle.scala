@@ -54,15 +54,15 @@ case class TLE[F: Fractional: Trig] (
   def delta1 = tval/(a1 * a1)
   
   // original semimajor axis
-  def a0 = a1 * (1 - delta1 * (ONE_THIRD + delta1 * (1 + 134.0/81.0 * delta1)))
+  def a0 = a1 * (1 - delta1 * (ONE_THIRD + delta1 * (1 + 134 * delta1 / 81)))
 //  
   def delta0 = tval/(a0 * a0)
   def xn0dp = xno /(delta0 + 1)   // the original mean motion
    
   // Select a deep-space/near-earth ephemeris 
   def isDeepSpacePeriod : Boolean = {
-    val a = Fractional[F].fromDouble(0.15625 / (2.0*pi))
-    val b = Fractional[F].one / (xn0dp * MINUTES_PER_DAY)
+    val a : F = Fractional[F].fromDouble(0.15625 / (2*pi))
+    val b : F = 1 / (xn0dp * MINUTES_PER_DAY)
     b >= a // (1.0 / 6.4)
   }
   def isDeepSpace : Boolean = isDeepSpacePeriod
