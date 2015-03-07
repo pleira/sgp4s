@@ -55,7 +55,10 @@ class Official_TLE_Spec extends FunSuite
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
     import spire.implicits._
     expectedSGP4.keys foreach {min => 
-      check(PVConverter[Double]((new SGP4(tle).propagate(Duration(min, TimeUnit.MINUTES)))), expectedSGP4(min)) }
+      val kc = new SGP4(tle).propagate(Duration(min, TimeUnit.MINUTES))
+      val (pos,vel) : (Vector[Double],Vector[Double]) = new PVConverter[Double]().coord(kc)
+      check( (pos, vel), expectedSGP4(min)) 
+    }
   }
              
 }
