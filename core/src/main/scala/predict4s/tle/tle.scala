@@ -15,7 +15,7 @@ case class TLE[F: Fractional: Trig] (
   val launchYear: Int, 
   val launchNumber: Int,  
   val launchPiece: String, 
-  val ephemerisType:Int,  
+  val ephemerisType: Int,  
   val elementNumber: Int, 
 
   // orbital parameters
@@ -55,15 +55,16 @@ case class TLE[F: Fractional: Trig] (
   
   // original semimajor axis
   def a0 = a1 * (1 - delta1 * (ONE_THIRD + delta1 * (1 + 134 * delta1 / 81)))
-//  
+
   def delta0 = tval/(a0 * a0)
-  def xn0dp = xno /(delta0 + 1)   // the original mean motion
+  // the original mean motion
+  def xn0dp = xno /(delta0 + 1)   
    
   // Select a deep-space/near-earth ephemeris 
   def isDeepSpacePeriod : Boolean = {
     val a : F = Fractional[F].fromDouble(0.15625 / (2*pi))
     val b : F = 1 / (xn0dp * MINUTES_PER_DAY)
-    b >= a // (1.0 / 6.4)
+    b >= a
   }
   def isDeepSpace : Boolean = isDeepSpacePeriod
   
@@ -224,19 +225,6 @@ object TLE {
       if (year > 2056) (year - 100) else year
     }
 
-//	implicit class TLEString(line: String) {
-//	  
-//	  def parseInteger(start: Int, length: Int) : Int = 
-//	    line.substring(start, start + length).replace(' ', '0').toInt
-//	
-//	  def parseDouble(start: Int, length: Int) : Double = 
-//	    line.substring(start, start + length).toDouble
-//		  
-//	  def parseYear(start: Int) : Int = {
-//	    val year = 2000 + line.parseInteger(start, 2)
-//	    if (year > 2056) (year - 100) else year
-//	  }
-//	}
 }
 
 } // end package
