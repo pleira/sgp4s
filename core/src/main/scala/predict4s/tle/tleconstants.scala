@@ -33,3 +33,4 @@ object TLEConstants {
   implicit object TLEConstantsR  extends TLEConstants[Real]
   implicit object TLEConstantsBD extends TLEConstants[BigDecimal]
 }
+
