@@ -1,7 +1,6 @@
 package predict4s
 
 import spire.math.Fractional
-import spire.algebra.Order
 import spire.algebra.Trig
 import spire.implicits._
 

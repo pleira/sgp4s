@@ -47,16 +47,16 @@ class SGP4[F : Fractional: Trig](tle: TLE[F]) extends TLEPropagator[F](tle) {
   // initialized
         
 
-  /*override*/ def propagate[T <: { def toMinutes: Long}](duration: T) : KeplerCoord[F] = {
+  override def propagate[T <: { def toMinutes: Long}](duration: T) : KeplerCoord[F] = {
     import scala.language.reflectiveCalls
     val tSince = duration.toMinutes
     // Update for secular gravity and atmospheric drag.
-    val xmdf0 =  xmdot * tSince
-    val xmdf = meanAnomaly + xmdf0
+    val xmdf0  =  xmdot * tSince
+    val xmdf   = meanAnomaly + xmdf0
     val omgadf = pa + omgdot * tSince
     val xn0ddf = raan + xnodot * tSince
-    val tsq = tSince * tSince
-    val xnode = xn0ddf + xnodcf * tsq
+    val tsq    = tSince * tSince
+    val xnode  = xn0ddf + xnodcf * tsq
            
     val ctempa = 1 - c1 * tSince
     val ctempe = bStar * c4 * tSince
