@@ -1,13 +1,12 @@
 package predict4s.tle
-import spire.algebra.Order
 import spire.algebra.Trig
 import spire.math._
 import spire.implicits._
 import predict4s.KeplerCoord
 
-class PVConverter[F: Fractional: Trig] {
+class PVConverter[F: Fractional: Trig]() {
   //  FIXME
-  val tlec = new TLEConstants[F]();
+  val tlec : TLEConstants[F] = new TLEConstants[F]()
   import tlec._
   
   // TODO: away with this method by having degrees and radians
@@ -16,34 +15,32 @@ class PVConverter[F: Fractional: Trig] {
 
   def coord(kc: KeplerCoord[F]): (Vector[F], Vector[F])  = {
     import kc._
-    // implicit def DoubleRadians: Radians[Double] = radians(_ * spire.math.Pi / 180, _ * 180 / scala.math.Pi)
     val sini0 = sin(i)
     val cosi0 = cos(i)
-    val one = Fractional[F].one
-    val axn = e * cos(omega)
-    var temp = one / (a * (one - e * e))
-    val xlcof = 0.125 * A3OVK2 * sini0 * (3.0 + 5.0 * cosi0) / (one + cosi0)
-    val aycof = 0.25 * A3OVK2 * sini0
+    val axn = e * cos(ω)
+    val temp : F = 1 / (a * (1 - e * e))
+    val xlcof = 0.125 * A3OVK2 * sini0 * (3 + 5 * cosi0) / (1 + cosi0)
+    val aycof = A3OVK2 * sini0 / 4
     val xll = temp * xlcof * axn
     val aynl = temp * aycof
     val xlt = xl + xll
-    val ayn = e * sin(omega) + aynl
+    val ayn = e * sin(ω) + aynl
     val elsq = axn * axn + ayn * ayn
     val capu = normalizeAngle(xlt - raan, Fractional[F].fromReal(pi))
     var epw = capu
-    var ecosE = Fractional[F].zero
-    var esinE = Fractional[F].zero
-    var sinEPW = Fractional[F].zero
-    var cosEPW = Fractional[F].zero
+    var ecosE : F = 0
+    var esinE : F = 0
+    var sinEPW : F = 0
+    var cosEPW : F = 0
     val cosi0Sq = cosi0 * cosi0
-    val x3thm1 = 3.0 * cosi0Sq - one
-    val x1mth2 = one - cosi0Sq
-    val x7thm1 = 7.0 * cosi0Sq - one
-    if (e > Fractional[F].fromDouble(1 - 1e-6)) {
+    val x3thm1 = 3 * cosi0Sq - 1
+    val x1mth2 = 1 - cosi0Sq
+    val x7thm1 = 7 * cosi0Sq - 1
+    val limit : F = Fractional[F].fromDouble(1 - 1e-6)
+    if (e > limit) {
       throw new predict4s.Predict4sException("TOO_LARGE_ECCENTRICITY_FOR_PROPAGATION_MODEL")
     }
     val newtonRaphsonEpsilon = Fractional[F].fromDouble(1e-12)
-    val two = Fractional[F].fromInt(2)
     for (j <- 0 until 10) {
       var doSecondOrderNewtonRaphson = true
       sinEPW = sin(epw)
@@ -54,7 +51,7 @@ class PVConverter[F: Fractional: Trig] {
       if (abs(f) < newtonRaphsonEpsilon) {
         //break
       }
-      val fdot = one - ecosE
+      val fdot = 1 - ecosE
       var delta_epw = f / fdot
       if (j == 0) {
         val maxNewtonRaphson = 1.25 * abs(e)
@@ -68,27 +65,26 @@ class PVConverter[F: Fractional: Trig] {
         }
       }
       if (doSecondOrderNewtonRaphson) {
-        delta_epw = f / (fdot + esinE * delta_epw / two)
+        delta_epw = f / (fdot + esinE * delta_epw / 2)
       }
       epw += delta_epw
     }
-    temp = one - elsq
-    val pl = a * temp
-    val r = a * (one - ecosE)
-    var temp2 = a / r
-    val betal = sqrt(temp)
-    temp = esinE / (one + betal)
-    val cosu = temp2 * (cosEPW - axn + ayn * temp)
-    val sinu = temp2 * (sinEPW - ayn - axn * temp)
+    val pl = a * (1 - elsq)
+    val r = a * (1 - ecosE)
+    val betal = sqrt(1 - elsq)
+    val temp3 = esinE / (1 + betal)
+    val cosu =  (cosEPW - axn + ayn * temp3)
+    val sinu =  (sinEPW - ayn - axn * temp3)
     val u = atan2(sinu, cosu)
-    val sin2u = two * sinu * cosu
-    val cos2u = two * cosu * cosu - one
+    val aconst = 2 * a * a  * cosu / r / r
+    val sin2u = aconst * sinu
+    val cos2u = aconst * cosu - 1
     val temp1 = CK2 / pl
-    temp2 = temp1 / pl
-    val rk = r * (one - 1.5 * temp2 * betal * x3thm1) + temp1 * x1mth2 * cos2u / two
-    val uk = u - 0.25 * temp2 * x7thm1 * sin2u
-    val xnodek = raan + 1.5 * temp2 * cosi0 * sin2u
-    val xinck = i + 1.5 * temp2 * cosi0 * sini0 * cos2u
+    val temp2 = temp1 / pl
+    val rk = r * (1 - 3 * temp2 * betal * x3thm1 / 2) + temp1 * x1mth2 * cos2u / 2
+    val uk = u - temp2 * x7thm1 * sin2u / 4
+    val xnodek = raan + 3 * temp2 * cosi0 * sin2u / 2
+    val xinck = i + 3 * temp2 * cosi0 * sini0 * cos2u / 2
     val sinuk = sin(uk)
     val cosuk = cos(uk)
     val sinik = sin(xinck)
@@ -100,24 +96,21 @@ class PVConverter[F: Fractional: Trig] {
     val ux = xmx * sinuk + cosnok * cosuk
     val uy = xmy * sinuk + sinnok * cosuk
     val uz = sinik * sinuk
-    val cr = rk * EARTH_RADIUS
-    val pos = Vector(cr * ux, cr * uy, cr * uz)
     val rdot = KE * sqrt(a) * esinE / r
     val rfdot = KE * sqrt(pl) / r
     val xn = KE / (a * sqrt(a))
     val rdotk = rdot - xn * temp1 * x1mth2 * sin2u
-    val rfdotk = rfdot + xn * temp1 * (x1mth2 * cos2u + 1.5 * x3thm1)
-    val vx = xmx * cosuk - cosnok * sinuk
-    val vy = xmy * cosuk - sinnok * sinuk
-    val vz = sinik * cosuk
-    val cv = EARTH_RADIUS / 60
-    val vel = Vector(cv * (rdotk * ux + rfdotk * vx), cv * (rdotk * uy + rfdotk * vy), cv * (rdotk * uz + rfdotk * vz))
+    val rfdotk = rfdot + xn * temp1 * (x1mth2 * cos2u + 3 * x3thm1 / 2)
+    val pos = (EARTH_RADIUS * rk) *: Vector(ux, uy, uz)
+    val v_u = rdotk *: Vector(ux, uy, uz)
+    val v_v = rfdotk *: Vector(xmx * cosuk - cosnok * sinuk, xmy * cosuk - sinnok * sinuk,  sinik * cosuk)
+    val vel = (EARTH_RADIUS / 60) *: (v_v + v_u) 
     (pos, vel)    
   }
-
+  
 }
 
-object PVConverter {
-  def apply[F: Fractional: Trig](p : KeplerCoord[F]) : (Vector[F], Vector[F]) = new PVConverter[F]().coord(p)
-}
+//object PVConverter {
+//  def apply[F: Fractional: Trig](p : KeplerCoord[F]) : (Vector[F], Vector[F]) = new PVConverter[F]().coord(p)
+//}
 

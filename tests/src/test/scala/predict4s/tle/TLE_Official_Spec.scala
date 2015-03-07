@@ -52,10 +52,15 @@ class Official_TLE_Spec extends FunSuite
   test("Oficial SGP4 prediction") {
     val tle = TLE(tle_11, tle_12)
     assert(!tle.isDeepSpace)
-    implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
     import spire.implicits._
+    val prop = new SGP4(tle)
+    val pvconv = new PVConverter[Double]()
+    implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
     expectedSGP4.keys foreach {min => 
-      check(PVConverter[Double]((new SGP4(tle).propagate(Duration(min, TimeUnit.MINUTES)))), expectedSGP4(min)) }
+      val kc = prop.propagate(Duration(min, TimeUnit.MINUTES))
+      val (pos,vel) : (Vector[Double],Vector[Double]) = pvconv.coord(kc)
+      check( (pos, vel), expectedSGP4(min)) 
+    }
   }
              
 }

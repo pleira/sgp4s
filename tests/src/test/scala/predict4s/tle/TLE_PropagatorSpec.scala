@@ -57,7 +57,7 @@ class TLE_PropagatorSpec extends FunSuite
     assert(finalState.i === 1.7113843433722917, " i ") // 1.7113843433722922	?
     assert(finalState.ω === 5.425763790324253, " perigee ")
     assert(finalState.Ω === 2.102070472241324, " raan ") // 2.07534657893693?
-    assert(finalState.xl === 155.4441131488079, " vernal equinox")  // 155.47483697687704?
+    assert(finalState.ν === 155.4441131488079, " true anomaly ")  // 155.47483697687704?
   }
   
 }
