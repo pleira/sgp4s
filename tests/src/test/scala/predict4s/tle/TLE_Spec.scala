@@ -39,7 +39,8 @@ class Step1_Spec extends FunSuite
 
   private def checkSymmetry(line1: String, line2: String) {
     val tleRef = TLE(line1, line2)
-    val tle = TLE0(tleRef.satelliteNumber, tleRef.classification, tleRef.launchYear, tleRef.launchNumber, tleRef.launchPiece, tleRef.ephemerisType, tleRef.elementNumber, tleRef.year, tleRef.refepoch, tleRef.meanMotion, tleRef.meanMotionFirstDerivative, tleRef.meanMotionSecondDerivative, tleRef.e, tleRef.i, tleRef.pa, tleRef.raan, tleRef.meanAnomaly, tleRef.revolutionNumberAtEpoch, tleRef.bStar)
+    import spire.implicits._
+    val tle = TLE[Double](tleRef.satelliteNumber, tleRef.classification, tleRef.launchYear, tleRef.launchNumber, tleRef.launchPiece, tleRef.ephemerisType, tleRef.elementNumber, tleRef.year, tleRef.refepoch, tleRef.meanMotion, tleRef.meanMotionFirstDerivative, tleRef.meanMotionSecondDerivative, tleRef.e, tleRef.i, tleRef.pa, tleRef.raan, tleRef.meanAnomaly, tleRef.revolutionNumberAtEpoch, tleRef.bStar)
     (line1, line2)
   }
 

@@ -19,8 +19,10 @@ object MyBuild extends Build {
   // Dependencies
   
   lazy val spireMath = "org.spire-math" %% "spire" % "0.9.1"
+  //lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.2.1"
   lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.1.3"
-  lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.11.3"
+  // lazy val scalaUtils = "org.scalautils" %% "scalautils" % "2.1.5"
+  lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.12.1"
 
   // Release step
 
@@ -53,7 +55,7 @@ object MyBuild extends Build {
 
     scalaVersion := "2.11.5",
 
-    crossScalaVersions := Seq("2.10.4", "2.11.5"),
+    crossScalaVersions := Seq("2.11.5"),
 
     licenses := Seq("BSD-style" -> url("http://opensource.org/licenses/MIT")),
     homepage := Some(url("http://www.pitagoral.com")),
@@ -153,6 +155,7 @@ object MyBuild extends Build {
       spireMath % "compile",
       scalaCheck % "test",
       scalaTest % "test"
+    //  scalaUtils % "test"
     )
   ) ++ buildInfoSettings ++ Seq(
     buildInfoKeys := Seq[BuildInfoKey](version, scalaVersion),

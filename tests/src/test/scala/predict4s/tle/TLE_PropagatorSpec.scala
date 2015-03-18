@@ -47,16 +47,17 @@ class TLE_PropagatorSpec extends FunSuite
   def within(a: Double, b: Double, e: Double) : Boolean =  (a >= b - e && a <= b + e)
 	      
   test("TLE_LEO Slave Mode") {
-    import TLEPropagator._
     val duration     = Duration(2341.4889653027058, TimeUnit.MINUTES)
-    val finalState = tle_leo.propagate(duration)
+    val finalState = {
+          import spire.implicits._
+          new SGP4(tle_leo).propagate(duration)
+    } 
     assert(finalState.a === 1.118136309343834, " a ")
     assert(finalState.e === 0.008415889590488213, " e ") // 0.008415889602669875?
     assert(finalState.i === 1.7113843433722917, " i ") // 1.7113843433722922	?
-    assert(finalState.raan === 2.102070472241324, " raan ") // 2.07534657893693?
-    assert(finalState.xl === 155.4441131488079, " vernal equinox")  // 155.47483697687704?
-    assert(finalState.omega === 5.425763790324253, " omega ")
-
+    assert(finalState.ω === 5.425763790324253, " perigee ")
+    assert(finalState.Ω === 2.102070472241324, " raan ") // 2.07534657893693?
+    assert(finalState.ν === 155.4441131488079, " true anomaly ")  // 155.47483697687704?
   }
   
 }

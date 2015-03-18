@@ -3,6 +3,7 @@ import org.scalatest._
 import org.scalautils.TolerantNumerics
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
+import spire.math.Real
 
 class Official_TLE_Spec extends FunSuite
   with BeforeAndAfterAll
@@ -35,10 +36,6 @@ class Official_TLE_Spec extends FunSuite
   val tle_12 = "2 88888  72.8435 115.9689 0086731  52.6988 110.5714 16.05824518   103"
   val tle_21 = "1 11801U          80230.29629788  .01431103  00000-0  14311-1      13"
   val tle_22 = "2 11801  46.7916 230.4354 7318036  47.4722  10.4117  2.28537848    13"
-    
-  test("Official SGP4 TLE Format must be correctly parsed") {
-    assert(TLE.isFormatOK(tle_11, tle_12))
-  }
  
   def check(result: (Vector[Double],Vector[Double]), expected: (Vector[Double],Vector[Double]))
      (implicit ev: org.scalautils.Equality[Double]) {
@@ -52,9 +49,32 @@ class Official_TLE_Spec extends FunSuite
   test("Oficial SGP4 prediction") {
     val tle = TLE(tle_11, tle_12)
     assert(!tle.isDeepSpace)
+    import spire.implicits._
+    val prop = new SGP4(tle)
+    val pvconv = new PVConverter[Double]()
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
     expectedSGP4.keys foreach {min => 
-      check(PVConverter((new SGP4(tle)).propagate(Duration(min, TimeUnit.MINUTES))), expectedSGP4(min)) }
+      val kc = prop.propagate(Duration(min, TimeUnit.MINUTES))
+      val (pos,vel) : (Vector[Double],Vector[Double]) = pvconv.coord(kc)
+      check( (pos, vel), expectedSGP4(min)) 
+    }
   }
-             
+
+  //    Note: using reals, the test passes but takes longer
+//  test("Oficial SGP4 Real prediction") {
+//    val tle : TLE[Real] = TLE.buildReal(tle_11, tle_12)
+//    val prop = new SGP4(tle)
+//    val pvconv = new PVConverter[Real]()
+//    assert(!tle.isDeepSpace)
+//    // we will do the comparison with doubles
+//    implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
+//    expectedSGP4.keys foreach {min => 
+//      val kc = prop.propagate(Duration(min, TimeUnit.MINUTES))
+//      val (pos,vel) : (Vector[Real],Vector[Real]) = pvconv.coord(kc)
+//      val dpos = pos map (_.toDouble)
+//      val dvel = vel map (_.toDouble)
+//      check( (dpos, dvel), expectedSGP4(min)) 
+//    }
+//  }
+    
 }
