@@ -17,27 +17,26 @@ trait KcPropagation[F, KC[F]] {
  */
 abstract class TLEPropagator[F: Fractional : Trig](tle : TLE[F]) extends KcPropagation[F, KeplerCoord] { 
    import tle._
-   import tle.tlec._
+   import tle.tlec._ // Constants
    import spire.implicits._
-  
+   
    val a0dp   = a0/(1 - delta0)       
    val perige = (a0dp*(1-e) - NEQR) * EARTH_RADIUS 
     
    // Values of s and qms2t :    
    val (s4, q0ms24) : (F, F) = 
-     if(perige < 156) {
+     if (perige < 156) {
 	     //  For perigee below 156 km, the values of s and QOMS2T are changed :
 	     val s4t : F = if (perige <= 98) 20 else perige - 78
 	     val temp_val = (120 - s4t) * NEQR / EARTH_RADIUS
-	     val temp_val_squared = temp_val * temp_val
        // new value for (s, q0ms2T) 
-       (s4t / EARTH_RADIUS + NEQR, temp_val_squared * temp_val_squared)  
+       (s4t / EARTH_RADIUS + NEQR, temp_val pow 4)  
      } else {
        // unmodified
        (S, QOMS2T)  
      }
     
-   val pinv   =  1 / (a0dp * beta02)
+   val pinv   = 1 / (a0dp * beta02)
    val pinvsq = pinv * pinv
    val tsi    = 1 / (a0dp - s4)
    val eta    = a0dp*e*tsi

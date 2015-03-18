@@ -8,7 +8,7 @@ import spire.algebra._
 import spire.math._
 import spire.implicits._
 
-case class TLE[F: Fractional: Trig] (
+case class TLE[F: Fractional: Trig](
   // identification
   val satelliteNumber: Int,  
   val classification: Char, 
@@ -32,33 +32,32 @@ case class TLE[F: Fractional: Trig] (
   val revolutionNumberAtEpoch: Int,  
   val bStar: F
 )  {
-//  FIXME
-  val tlec = new TLEConstants[F]();
+  val tlec = new TLEConstants[F]()
   import tlec._
   
   def meanMotion0: F = (meanMotion / pi) * 43200
   def epoch : F = 1000 * year + refepoch
 
   // Intermediate values used by the propagator models
-  def cosi0 = cos(i)       
+  val cosi0 = cos(i)       
   def r1 = cosi0
-  def theta2  = cosi0 * cosi0
-  def e0sq = e * e 
-  def xno = meanMotion * 60
+  val theta2  = cosi0 * cosi0
+  val e0sq = e * e 
+  val xno = meanMotion * 60
 
-  def a1 = (KE / xno) fpow (TWO_THIRD)
-  def x3thm1 = 3 * theta2 - 1
-  def beta02 = 1 - e0sq
-  def beta0 = sqrt(beta02)
-  def tval = CK2 * 1.5 * x3thm1 / (beta0 * beta02)
-  def delta1 = tval/(a1 * a1)
+  val a1 = (KE / xno) fpow (TWO_THIRD)
+  val x3thm1 = 3 * theta2 - 1
+  val beta02 = 1 - e0sq
+  val beta0 = sqrt(beta02)
+  val tval = CK2 * 1.5 * x3thm1 / (beta0 * beta02)
+  val delta1 = tval/(a1 * a1)
   
   // original semimajor axis
-  def a0 = a1 * (1 - delta1 * (ONE_THIRD + delta1 * (1 + 134 * delta1 / 81)))
+  val a0 = a1 * (1 - delta1 * (ONE_THIRD + delta1 * (1 + 134 * delta1 / 81)))
 
-  def delta0 = tval/(a0 * a0)
+  val delta0 = tval/(a0 * a0)
   // the original mean motion
-  def xn0dp = xno /(delta0 + 1)   
+  val xn0dp = xno /(delta0 + 1)   
    
   // Select a deep-space/near-earth ephemeris 
   def isDeepSpacePeriod : Boolean = {

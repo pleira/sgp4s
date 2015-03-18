@@ -3,6 +3,7 @@ import org.scalatest._
 import org.scalautils.TolerantNumerics
 import scala.concurrent.duration.Duration
 import java.util.concurrent.TimeUnit
+import spire.math.Real
 
 class Official_TLE_Spec extends FunSuite
   with BeforeAndAfterAll
@@ -58,5 +59,22 @@ class Official_TLE_Spec extends FunSuite
       check( (pos, vel), expectedSGP4(min)) 
     }
   }
-             
+
+  //    Note: using reals, the test passes but takes longer
+//  test("Oficial SGP4 Real prediction") {
+//    val tle : TLE[Real] = TLE.buildReal(tle_11, tle_12)
+//    val prop = new SGP4(tle)
+//    val pvconv = new PVConverter[Real]()
+//    assert(!tle.isDeepSpace)
+//    // we will do the comparison with doubles
+//    implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
+//    expectedSGP4.keys foreach {min => 
+//      val kc = prop.propagate(Duration(min, TimeUnit.MINUTES))
+//      val (pos,vel) : (Vector[Real],Vector[Real]) = pvconv.coord(kc)
+//      val dpos = pos map (_.toDouble)
+//      val dvel = vel map (_.toDouble)
+//      check( (dpos, dvel), expectedSGP4(min)) 
+//    }
+//  }
+    
 }

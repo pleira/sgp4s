@@ -1,18 +1,15 @@
 package predict4s.tle
 
 import predict4s.KeplerCoord
-//import spire.math.Fractional
-//import spire.algebra.Order
 import spire.algebra._
 import spire.math._
 import spire.implicits._
 import scala.{ specialized => spec }
 
-class SGP4[F : Fractional: Trig](tle: TLE[F]) extends TLEPropagator[F](tle) {
+class SGP4[F : Fractional: Trig](tle: TLE[F]) extends TLEPropagator[F](tle)  {
 
   import tle._
-  // FIXME
-  import tle.tlec._
+  import tle.tlec._ // Constants
    
   def simple : Boolean = perige < 220
 
@@ -36,8 +33,8 @@ class SGP4[F : Fractional: Trig](tle: TLE[F]) extends TLEPropagator[F](tle) {
       val (_xmcof, _omgcof) : (F, F) = 
         if (e < Fractional[F].fromDouble(1e-4)) (0, 0)
         else  {
-          val c3 = coef * tsi * A3OVK2 * xn0dp * NORMALIZED_EQUATORIAL_RADIUS * sini0 / e
-          (- TWO_THIRD * coef * tle.bStar * NORMALIZED_EQUATORIAL_RADIUS / eeta, 
+          val c3 = coef * tsi * A3OVK2 * xn0dp * NEQR * sini0 / e
+          (- TWO_THIRD * coef * tle.bStar * NEQR / eeta, 
            tle.bStar * c3 * cos(pa))
         }
       (_d2, _d3, _d4, _t3cof, _t4cof, _t5cof, _omgcof, _xmcof, _sinM0, _delM0)
