@@ -8,6 +8,17 @@ import spire.algebra._
 import spire.math._
 import spire.implicits._
 
+/** TLE data are provided as mean, doubly averaged Kepler states (with mean
+ * motion instead of semimajor axis), according to Brouwer's theory, with adaptations
+ * by Lane, Crawford, and Hujsak as described in (Hoots and Roehrich, 1980).
+ * The data are formatted in two lines (hence Two-Line Elements), with additional
+ * information on the reference epoch, on a drag related parameter, and on the international
+ * designation codes of the tracked objects. TLE orbits are described in
+ * a true equator and mean equinox reference frame (TEME), where the orientation
+ * of the equator plane accounts for precession and nutation of the Z-axis under the
+ * influence of Sun and Moon, and the X-axis points to the meridian
+ * of the mean vernal equinox in a system which accounts for precession only.
+ */
 case class TLE[F: Fractional: Trig](
   // identification
   val satelliteNumber: Int,  
