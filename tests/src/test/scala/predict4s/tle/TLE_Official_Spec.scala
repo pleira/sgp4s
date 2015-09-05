@@ -47,8 +47,11 @@ class Official_TLE_Spec extends FunSuite
   }
     
   test("Oficial SGP4 prediction") {
-    val tle = TLE(tle_11, tle_12)
-    assert(!tle.isDeepSpace)
+import spire.algebra._
+import spire.math._
+import spire.implicits._
+    val tle : TLE[Double] = TLE(tle_11, tle_12)
+    // assert(!tle.isDeepSpace)
     import spire.implicits._
     val prop = new SGP4(tle)
     val pvconv = new PVConverter[Double]()
@@ -62,10 +65,10 @@ class Official_TLE_Spec extends FunSuite
 
   //    Note: using reals, the test passes but takes longer
 //  test("Oficial SGP4 Real prediction") {
-//    val tle : TLE[Real] = TLE.buildReal(tle_11, tle_12)
-//    val prop = new SGP4(tle)
+//    val tle : TLE[Real] = TLE(tle_11, tle_12)
+//    val prop = new SGP4[Real](tle)
 //    val pvconv = new PVConverter[Real]()
-//    assert(!tle.isDeepSpace)
+//    // assert(!tle.isDeepSpace)
 //    // we will do the comparison with doubles
 //    implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
 //    expectedSGP4.keys foreach {min => 

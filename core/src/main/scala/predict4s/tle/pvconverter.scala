@@ -5,7 +5,7 @@ import spire.implicits._
 import predict4s.KeplerCoord
 
 class PVConverter[F: Fractional: Trig]() {
-  //  FIXME use implicits
+  //  FIXME use implicits or typeclass ...
   val tlec : TLEConstants[F] = new TLEConstants[F]()
   import tlec._
   

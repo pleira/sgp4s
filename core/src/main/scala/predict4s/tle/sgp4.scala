@@ -16,10 +16,10 @@ import scala.{ specialized => spec }
  * of first-order, short-period perturbation amplitudes due to J2. 
  * (from Space Debris, by H. Klinkrad, pag 216).
  */ 
-class SGP4[F : Fractional: Trig](tle: TLE[F]) extends TLEPropagator[F](tle)  {
+class SGP4[F : Fractional: Trig](tle: TLE[F]) extends BaseSGP[F](tle)  {
 
   import tle._
-  import tle.tlec._ // Constants
+  import tlec._ // Constants
    
   def simple : Boolean = perige < 220
 
@@ -29,7 +29,7 @@ class SGP4[F : Fractional: Trig](tle: TLE[F]) extends TLEPropagator[F](tle)  {
   val (d2, d3, d4, t3cof, t4cof, t5cof, omgcof, xmcof, sinM0, delM0) : (F,F,F,F,F,F,F,F,F,F) = 
     if (simple) (0,0,0,0,0,0,0,0,0,0)
     else {
-      val c1sq : F   = c1 * c1
+      val c1sq = c1 * c1
       val _delM0_ : F = 1 + eta * cos(meanAnomaly)
       val _delM0 : F = _delM0_ * _delM0_ * _delM0_
       val _d2 : F    = 4 * a0dp * tsi * c1sq
@@ -91,7 +91,8 @@ class SGP4[F : Fractional: Trig](tle: TLE[F]) extends TLEPropagator[F](tle)  {
     val xn = KE / (a pow 1.5)
     val xl = xmp + omega + xnode + xn0dp * templ
 
-    KeplerCoord[F](a, e_new, i, omega, xnode, xl)
+    // this is in the TEME system of reference
+    new KeplerCoord[F](a, e_new, i, omega, xnode, xl)
   }
 
 }

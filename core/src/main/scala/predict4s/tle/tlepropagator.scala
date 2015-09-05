@@ -4,22 +4,63 @@ import spire.algebra._
 import spire.math._
 import predict4s.KeplerCoord
 
-//trait Propagation[K, V[K]] {
-//  def propagate[T](duration: T) : V[K]
-//}
-
-trait KcPropagation[F, KC[F]] { 
-  def propagate[T <: {def toMinutes: Long}](duration: T) : KC[F]
-}
 
 /**
  * Contains the common bits across the TLE propagation algorithms SGP4 and SGP8
  */
-abstract class TLEPropagator[F: Fractional : Trig](tle : TLE[F]) extends KcPropagation[F, KeplerCoord] { 
-   import tle._
-   import tle.tlec._ // Constants
-   import spire.implicits._
+abstract class BaseSGP[F: Fractional : Trig](tle : TLE[F])  {
+  
+  def propagate[T <: { def toMinutes: Long}](duration: T) : KeplerCoord[F]
+  
+  // Some constants, converted to type F  
+  //  FIXME use implicits or typeclass ...
+  val tlec : TLEConstants[F] = new TLEConstants[F]()
+  import tlec._
+
+  import tle._
+  import spire.implicits._
    
+  def isDeepSpacePeriod : Boolean = {
+    val a : F = Fractional[F].fromDouble(0.15625 / (2*pi))
+    val b : F = 1 / (xn0dp * MINUTES_PER_DAY)
+    b >= a
+  }
+  
+  def isDeepSpace : Boolean = isDeepSpacePeriod
+
+  
+  def meanMotion0 = (meanMotion / pi) * 43200
+  def epoch = 1000 * year + refepoch
+
+  // Intermediate values used by the propagator models
+  val cosi0 = cos(i)       
+  def r1 = cosi0
+  val theta2  = cosi0 * cosi0
+  val e0sq = e * e 
+  val xno = meanMotion * 60
+
+  val a1 = (KE / xno) fpow (TWO_THIRD)
+  val x3thm1 = 3 * theta2 - 1
+  val beta02 = 1 - e0sq
+  val beta0 = sqrt(beta02)
+  val tval = CK2 * 1.5 * x3thm1 / (beta0 * beta02)
+  val delta1 = tval/(a1 * a1)
+  
+  // original semimajor axis
+  val a0 = a1 * (1 - delta1 * (ONE_THIRD + delta1 * (1 + 134 * delta1 / 81)))
+
+  val delta0 = tval/(a0 * a0)
+  // the original mean motion
+  val xn0dp = xno /(delta0 + 1)   
+
+  val incl = i                   // already in Radians 
+  val nodeo = raan               // already Radians
+  val omegao = pa                // argper // already Radians 
+  val xmo = meanAnomaly          // already in Radians
+//  def nddot6 : F
+//  def xndt2o = drag * 2 * π / MINUTES_PER_DAY / MINUTES_PER_DAY
+  
+  
    val a0dp   = a0/(1 - delta0)       
    val perige = (a0dp*(1-e) - NEQR) * EARTH_RADIUS 
     
@@ -52,7 +93,7 @@ abstract class TLEPropagator[F: Fractional : Trig](tle : TLE[F]) extends KcPropa
                     0.75*CK2 * tsi/psisq * x3thm1 *(8 + 3*etasq * (8 + etasq)))
     val c1    = bStar * c2
     val sini0 = sin(i)    
-    val cosi0 = cos(i)  
+    // val cosi0 = cos(i)  
 //    val a3ovk2 = -XJ3 / CK2
 //    val c3 = coef * tsi * a3ovk2 * xn0dp * sini0 / e
    

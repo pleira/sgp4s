@@ -31,7 +31,7 @@ import spire.implicits._
  * @param ν true anomaly [rad]
  * 
  */
-case class KeplerCoord[F : Fractional: Trig](
+class KeplerCoord[F : Fractional: Trig](
   val a : F,      
   val e : F,      
   val i : F,      

@@ -28,6 +28,24 @@ class TLEConstants[F: Fractional: Trig]() {
   
 }
 
+// Variable name Definition Value as given in Hoots document
+//CK2 = 5.413080E-4 // 1/2 J2aE
+//CK4 = .62098875E-6 //  J4
+//E6A = 10E-6  // 6 1.0 E-6
+//QOMS2T = 1.88027916E-9
+//S = 1.01222928
+//TOTHRD =  .66666667 // 2/3
+//XJ3 = - 0.253881E-5 // J3
+//XKE = 0.743669161E-1
+//XKMPER = 6378.135
+//XMNPDA = 1440.0
+//AE = 1.0 // distance units/Earth radii
+//DE2RA = 0.174532925E-1 // radians/degree
+//PI = 3.14159265 // π
+//PIO2 = 1.57079633 // π/2 
+//TWOPI =  6.2831853 // 2π
+//X3PIO2 = 4.71238898  // 3π/2 
+
 //object TLEConstants {
 //  val TLEConstantsD = new TLEConstants[Double]
 //  val TLEConstantsR = new TLEConstants[Real]
