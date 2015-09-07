@@ -16,10 +16,10 @@ import scala.{ specialized => spec }
  * of first-order, short-period perturbation amplitudes due to J2. 
  * (from Space Debris, by H. Klinkrad, pag 216).
  */ 
-class SGP4[F : Fractional: Trig](tle: TLE[F]) extends BaseSGP[F](tle)  {
+class SGP4[F : Fractional: Trig](tle: TLE[F], tlec : TLEConstants[F]) extends BaseSGP[F](tle, tlec)  {
 
   import tle._
-  import tlec._ // Constants
+  import tlec._ 
    
   def simple : Boolean = perige < 220
 

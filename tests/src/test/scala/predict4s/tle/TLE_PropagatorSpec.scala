@@ -51,7 +51,7 @@ class TLE_PropagatorSpec extends FunSuite
   test("TLE_LEO Slave Mode") {
     val duration     = Duration(2341.4889653027058, TimeUnit.MINUTES)
     val finalState = {
-          new SGP4[Double](tle_leo).propagate(duration)
+          new SGP4[Double](tle_leo, TLEConstants.tleDoubleConstants).propagate(duration)
     } 
     assert(finalState.a == 1.118136309343834, " a ")
     assert(finalState.e == 0.008415889590488213, " e ") // 0.008415889602669875?

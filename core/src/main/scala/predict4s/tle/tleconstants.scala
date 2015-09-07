@@ -28,6 +28,14 @@ class TLEConstants[F: Fractional: Trig]() {
   
 }
 
+object TLEConstants {
+  
+  implicit val tleDoubleConstants = new TLEConstants[Double]();
+  
+  implicit val tleRealConstants = new TLEConstants[Real]();
+  
+}
+
 // Variable name Definition Value as given in Hoots document
 //CK2 = 5.413080E-4 // 1/2 J2aE
 //CK4 = .62098875E-6 //  J4

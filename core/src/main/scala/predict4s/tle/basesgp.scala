@@ -8,13 +8,10 @@ import predict4s.KeplerCoord
 /**
  * Contains the common bits across the TLE propagation algorithms SGP4 and SGP8
  */
-abstract class BaseSGP[F: Fractional : Trig](tle : TLE[F])  {
+abstract class BaseSGP[F: Fractional : Trig](tle : TLE[F], tlec : TLEConstants[F])   {
   
   def propagate[T <: { def toMinutes: Long}](duration: T) : KeplerCoord[F]
   
-  // Some constants, converted to type F  
-  //  FIXME use implicits or typeclass ...
-  val tlec : TLEConstants[F] = new TLEConstants[F]()
   import tlec._
 
   import tle._

@@ -53,7 +53,7 @@ import spire.implicits._
     val tle : TLE[Double] = TLE(tle_11, tle_12)
     // assert(!tle.isDeepSpace)
     import spire.implicits._
-    val prop = new SGP4(tle)
+    val prop = new SGP4(tle, TLEConstants.tleDoubleConstants)
     val pvconv = new PVConverter[Double]()
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
     expectedSGP4.keys foreach {min => 
@@ -66,7 +66,7 @@ import spire.implicits._
   //    Note: using reals, the test passes but takes longer
 //  test("Oficial SGP4 Real prediction") {
 //    val tle : TLE[Real] = TLE(tle_11, tle_12)
-//    val prop = new SGP4[Real](tle)
+//    val prop = new SGP4[Real](tle, TLEConstants.tleRealConstants)
 //    val pvconv = new PVConverter[Real]()
 //    // assert(!tle.isDeepSpace)
 //    // we will do the comparison with doubles
