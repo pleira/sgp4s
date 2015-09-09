@@ -26,7 +26,7 @@ abstract class BaseSGP[F: Fractional : Trig](tle : TLE[F], tlec : TLEConstants[F
   def isDeepSpace : Boolean = isDeepSpacePeriod
 
   
-  def meanMotion0 = (meanMotion / pi) * 43200
+//  def meanMotion0 = (meanMotion / pi) * 43200
   def epoch = 1000 * year + refepoch
 
   // Intermediate values used by the propagator models
@@ -34,7 +34,7 @@ abstract class BaseSGP[F: Fractional : Trig](tle : TLE[F], tlec : TLEConstants[F
   def r1 = cosi0
   val theta2  = cosi0 * cosi0
   val e0sq = e * e 
-  val xno = meanMotion * 60
+  val xno = meanMotion * 3 * pi / 2160 
 
   val a1 = (KE / xno) fpow (TWO_THIRD)
   val x3thm1 = 3 * theta2 - 1
