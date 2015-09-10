@@ -6,14 +6,17 @@ import predict4s.Predict4sException
 class Step1_Spec extends FunSuite
   with BeforeAndAfterAll
   with ShouldMatchers {
-  import scala.math.Pi
   
   test("TLE Format must be correctly parsed") {
         val line1 = "1 27421U 02021A   02124.48976499 -.00021470  00000-0 -89879-2 0    20"
         val line2 = "2 27421  98.7490 199.5121 0001333 133.9522 226.1918 14.26113993    62"
 
         assert(TLE.isFormatOK(line1, line2))
-        // import spire.implicits._
+
+        // instead of import spire.implicits._ for doubles I can do
+        object ddd extends spire.std.DoubleInstances
+        import ddd.DoubleAlgebra
+
         val tle : TLE[Double] = TLE(line1, line2)
         
         implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1e-10)
@@ -29,7 +32,7 @@ class Step1_Spec extends FunSuite
         assert(0.0001333 === tle.e)
         assert(133.9522 === tle.paDeg)
         assert(226.1918 === tle.meanAnomalyDeg)
- //       assert(14.26113993 === tle.meanMotion * MINUTES_PER_DAY / (2 * Pi))
+        assert(14.26113993 === tle.meanMotion)
         assert(tle.revolutionNumberAtEpoch == 6)
         assert(tle.elementNumber == 2)
   }

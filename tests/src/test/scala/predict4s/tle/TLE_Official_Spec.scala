@@ -47,12 +47,11 @@ class Official_TLE_Spec extends FunSuite
   }
     
   test("Oficial SGP4 prediction") {
-import spire.algebra._
-import spire.math._
-import spire.implicits._
+    // instead of import spire.implicits._ for doubles I can do
+    object ddd extends spire.std.DoubleInstances
+    import ddd.DoubleAlgebra
     val tle : TLE[Double] = TLE(tle_11, tle_12)
     // assert(!tle.isDeepSpace)
-    import spire.implicits._
     val prop = new SGP4(tle, TLEConstants.tleDoubleConstants)
     val pvconv = new PVConverter[Double]()
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)

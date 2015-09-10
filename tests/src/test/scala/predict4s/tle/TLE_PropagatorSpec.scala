@@ -34,7 +34,10 @@ class TLE_PropagatorSpec extends FunSuite
 //    
 //  implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1e-10)
 
-  import spire.implicits._
+  // import spire.implicits._
+  // instead of import spire.implicits._ for doubles I can do
+  object ddd extends spire.std.DoubleInstances
+  import ddd.DoubleAlgebra
 
   final val tle_leo : TLE[Double] = 
     TLE("1 28375U 04025K   09105.66391970  .00000003  00000-0  13761-4 0  3643",
@@ -44,23 +47,19 @@ class TLE_PropagatorSpec extends FunSuite
 //    assert(tle_leo !== null)
 //    assert(!tle_leo.isDeepSpacePeriod)
 //  }
-  
-
-  def within(a: Double, b: Double, e: Double) : Boolean =  (a >= b - e && a <= b + e)
 	      
   test("TLE_LEO Slave Mode") {
-    val duration     = Duration(2341.4889653027058, TimeUnit.MINUTES)
-    val finalState = {
-          new SGP4[Double](tle_leo, TLEConstants.tleDoubleConstants).propagate(duration)
-    } 
-  //  assert(finalState.a == 1.118136309343834, " a ")
-      assert(finalState.a == 1.1181363093438337, " a ")
-    assert(finalState.e == 0.008415889590488213, " e ") // 0.008415889602669875?
-    assert(finalState.i == 1.7113843433722917, " i ") // 1.7113843433722922	?
- //   assert(finalState.ω == 5.425763790324253, " perigee ")
-    assert(finalState.ω == 5.425763790324254, " perigee ")
-   assert(finalState.Ω == 2.1020704722413246, " raan ") // 2.07534657893693?
-    assert(finalState.ν == 155.44411314880793, " true anomaly ")  // 155.47483697687704?
+    val duration   = Duration(2341.4889653027058, TimeUnit.MINUTES)
+    val finalState = new SGP4[Double](tle_leo, TLEConstants.tleDoubleConstants).propagate(duration)
+    
+    implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-12)
+
+    assert(finalState.a === 1.118136309343834, " a ")
+    assert(finalState.e === 0.008415889590488213, " e ") // 0.008415889602669875?
+    assert(finalState.i === 1.7113843433722917, " i ") // 1.7113843433722922	?
+    assert(finalState.ω === 5.425763790324254, " perigee ")
+    assert(finalState.Ω === 2.1020704722413246, " raan ") // 2.07534657893693?
+    assert(finalState.ν === 155.44411314880793, " true anomaly ")  // 155.47483697687704?
   }
   
 }
