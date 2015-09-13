@@ -4,7 +4,6 @@ import spire.algebra.{Ring, Field}
 package object tle {
   
   // FIXME: to remove with a Spire version > 10.2
-  
   implicit class IntAs(val n:Int)  {
     def as[A](implicit ev:Ring[A]) = ev.fromInt(n)
   }
@@ -13,4 +12,5 @@ package object tle {
     def as[A](implicit ev:Field[A]) = ev.fromDouble(n)
   }
 
+  val TEME = ReferenceSystem("TEME");
 }

@@ -1,6 +1,6 @@
 package predict4s.tle
 
-import predict4s.KeplerCoord
+//import predict4s.KeplerCoord
 import spire.algebra._
 import spire.math._
 import spire.implicits._
@@ -56,7 +56,7 @@ class SGP4[F : Field : NRoot : Order : Trig](tle: TLE[F], tlec : TLEConstants[F]
   // initialized
         
   // TODO: propagation should return a new TLE
-  def propagate(duration: F) : KeplerCoord[F] = {
+  def propagate(duration: F) : TEME.KeplerCoord[F] = {
     val tSince = duration   // in Minutes
     // Update for secular gravity and atmospheric drag.
     val xmdf0  =  xmdot * tSince
@@ -93,7 +93,7 @@ class SGP4[F : Field : NRoot : Order : Trig](tle: TLE[F], tlec : TLEConstants[F]
     val xl = xmp + omega + xnode + xn0dp * templ
 
     // this is in the TEME system of reference
-    new KeplerCoord[F](a, e_new, i, omega, xnode, xl)
+    TEME.KeplerCoord[F](a, e_new, i, omega, xnode, xl)
     // We should return with path dependent types here
   }
 

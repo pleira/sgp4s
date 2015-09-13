@@ -2,7 +2,6 @@ package predict4s.tle
 import spire.algebra.{Field,Trig,NRoot,Order,IsReal}
 import spire.math._
 import spire.implicits._
-import predict4s.KeplerCoord
 
 class PVConverter[F: Field: NRoot: Trig: IsReal](implicit tlec : TLEConstants[F]) {
   import tlec._
@@ -11,7 +10,7 @@ class PVConverter[F: Field: NRoot: Trig: IsReal](implicit tlec : TLEConstants[F]
    private def normalizeAngle(a : F, center: F) : F = 
      a - 2*pi * floor((a + pi - center) / (2* pi))
 
-  def coord(kc: KeplerCoord[F]): (Vector[F], Vector[F])  = {
+  def coord(kc: TEME.KeplerCoord[F]): TEME.PosVel[F]  = {
     import kc._
     val sini0 = sin(i)
     val cosi0 = cos(i)
@@ -105,7 +104,7 @@ class PVConverter[F: Field: NRoot: Trig: IsReal](implicit tlec : TLEConstants[F]
     val v_u = rdotk *: Vector(ux, uy, uz)
     val v_v = rfdotk *: Vector(xmx * cosuk - cosnok * sinuk, xmy * cosuk - sinnok * sinuk,  sinik * cosuk)
     val vel = (EARTH_RADIUS / 60) *: (v_v + v_u) 
-    (pos, vel)
+    TEME.PosVel(pos, vel)
   }
   
 }

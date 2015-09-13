@@ -3,6 +3,9 @@ package predict4s
 import spire.algebra.{Field, Order, Trig}
 import spire.implicits._
 
+
+case class ReferenceSystem(val name: String) {
+
 /**
  * Holds classical Kepler Coordinate elements:
  *
@@ -30,7 +33,7 @@ import spire.implicits._
  * @param ν true anomaly [rad]
  * 
  */
-class KeplerCoord[F : Field : Order : Trig](
+  case class KeplerCoord[F : Field : Order : Trig](
   val a : F,      
   val e : F,      
   val i : F,      
@@ -70,6 +73,10 @@ class KeplerCoord[F : Field : Order : Trig](
   
   override def toString = s"a: $a, e: $e, i: $i, raan: $Ω, ω: $ω, true anomaly: $xl"
 }
+  
+  case class PosVel[F : Field : Order : Trig](val p : Vector[F], v : Vector[F])   
+}
+
 
 case class Predict4sException(msg: String) extends Exception 
 
