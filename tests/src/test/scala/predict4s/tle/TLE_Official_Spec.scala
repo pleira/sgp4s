@@ -51,12 +51,12 @@ class Official_TLE_Spec extends FunSuite
     object ddd extends spire.std.DoubleInstances
     import ddd.DoubleAlgebra
     val tle : TLE[Double] = TLE(tle_11, tle_12)
-    // assert(!tle.isDeepSpace)
     val prop = new SGP4(tle, TLEConstants.tleDoubleConstants)
+    assert(!prop.isDeepSpace)
     val pvconv = new PVConverter[Double]()
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
     expectedSGP4.keys foreach {min => 
-      val kc = prop.propagate(Duration(min, TimeUnit.MINUTES))
+      val kc = prop.propagate(min)
       val (pos,vel) : (Vector[Double],Vector[Double]) = pvconv.coord(kc)
       check( (pos, vel), expectedSGP4(min)) 
     }

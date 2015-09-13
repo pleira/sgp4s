@@ -131,10 +131,10 @@ object TLE {
     line.substring(start, start + length).toDouble
   }
   
-  def parse[F](line : String, start: Int, length: Int)(implicit ev : Field[F]) : F = {
-    // FIXME ev.fromType ?
-    ev.fromDouble(line.substring(start, start + length).toDouble)
-  }
+  // FIXME ev.fromType ?
+  def parse[F](line : String, start: Int, length: Int)(implicit ev : Field[F]) : F = 
+    line.substring(start, start + length).toDouble.as[F]
+  
   
   def parseYear(line : String, start: Int) : Int = {
     val year = 2000 + parseInt(line, start, 2)

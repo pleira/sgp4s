@@ -1,16 +1,14 @@
 package predict4s.tle
-import spire.algebra.Trig
+import spire.algebra.{Field,Trig,NRoot,Order,IsReal}
 import spire.math._
 import spire.implicits._
 import predict4s.KeplerCoord
 
-class PVConverter[F: Fractional: Trig]() {
-  //  FIXME use implicits or typeclass ...
-  val tlec : TLEConstants[F] = new TLEConstants[F]()
+class PVConverter[F: Field: NRoot: Trig: IsReal](implicit tlec : TLEConstants[F]) {
   import tlec._
   
   // TODO: away with this method by having degrees and radians
-  private def normalizeAngle(a : F, center: F) : F = 
+   private def normalizeAngle(a : F, center: F) : F = 
      a - 2*pi * floor((a + pi - center) / (2* pi))
 
   def coord(kc: KeplerCoord[F]): (Vector[F], Vector[F])  = {
@@ -26,21 +24,21 @@ class PVConverter[F: Fractional: Trig]() {
     val xlt = xl + xll
     val ayn = e * sin(ω) + aynl
     val elsq = axn * axn + ayn * ayn
-    val capu = normalizeAngle(xlt - raan, Fractional[F].fromReal(pi))
+    val capu = normalizeAngle(xlt - raan, pi.as[F])
     var epw = capu
-    var ecosE : F = 0
-    var esinE : F = 0
-    var sinEPW : F = 0
-    var cosEPW : F = 0
+    var ecosE : F = 0.as[F]
+    var esinE : F = 0.as[F]
+    var sinEPW : F = 0.as[F]
+    var cosEPW : F = 0.as[F]
     val cosi0Sq = cosi0 * cosi0
     val x3thm1 = 3 * cosi0Sq - 1
     val x1mth2 = 1 - cosi0Sq
     val x7thm1 = 7 * cosi0Sq - 1
-    val limit : F = Fractional[F].fromDouble(1 - 1e-6)
+    val limit : F = (1 - 1e-6).as[F]
     if (e > limit) {
       throw new predict4s.Predict4sException("TOO_LARGE_ECCENTRICITY_FOR_PROPAGATION_MODEL")
     }
-    val newtonRaphsonEpsilon = Fractional[F].fromDouble(1e-12)
+    val newtonRaphsonEpsilon = (1e-12).as[F]
     var idx = 0
     while (idx < 10) {
       var doSecondOrderNewtonRaphson = true
@@ -55,7 +53,7 @@ class PVConverter[F: Fractional: Trig]() {
       val fdot = 1 - ecosE
       var delta_epw = f / fdot
       if (idx == 0) {
-        val maxNewtonRaphson = 1.25 * abs(e)
+        val maxNewtonRaphson = 1.25.as[F] * abs(e)
         doSecondOrderNewtonRaphson = false
         if (delta_epw > maxNewtonRaphson) {
           delta_epw = maxNewtonRaphson
@@ -111,8 +109,3 @@ class PVConverter[F: Fractional: Trig]() {
   }
   
 }
-
-//object PVConverter {
-//  def apply[F: Fractional: Trig](p : KeplerCoord[F]) : (Vector[F], Vector[F]) = new PVConverter[F]().coord(p)
-//}
-

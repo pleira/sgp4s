@@ -49,17 +49,17 @@ class TLE_PropagatorSpec extends FunSuite
 //  }
 	      
   test("TLE_LEO Slave Mode") {
-    val duration   = Duration(2341.4889653027058, TimeUnit.MINUTES)
+    val duration   = 2341.4889653027058 // in minutes
     val finalState = new SGP4[Double](tle_leo, TLEConstants.tleDoubleConstants).propagate(duration)
     
-    implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-12)
+    implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-9)
 
     assert(finalState.a === 1.118136309343834, " a ")
     assert(finalState.e === 0.008415889590488213, " e ") // 0.008415889602669875?
     assert(finalState.i === 1.7113843433722917, " i ") // 1.7113843433722922	?
-    assert(finalState.ω === 5.425763790324254, " perigee ")
-    assert(finalState.Ω === 2.1020704722413246, " raan ") // 2.07534657893693?
-    assert(finalState.ν === 155.44411314880793, " true anomaly ")  // 155.47483697687704?
+    assert(finalState.ω === 5.425745815821618, " perigee ")
+    assert(finalState.Ω === 2.102076054068816, " raan ") // 2.07534657893693?
+    assert(finalState.ν === 155.4748369659863, " true anomaly ")  // 155.47483697687704?
   }
   
 }

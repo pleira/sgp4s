@@ -2,31 +2,18 @@ package predict4s.tle
 
 import spire.algebra._
 import spire.math._
-import predict4s.KeplerCoord
+import spire.implicits._
 
 
 /**
  * Contains the common bits across the TLE propagation algorithms SGP4 and SGP8
  */
-abstract class BaseSGP[F: Fractional : Trig](tle : TLE[F], tlec : TLEConstants[F])   {
+class BaseSGP[F: Field: NRoot : Order : Trig](tle : TLE[F], tlec : TLEConstants[F])   {
   
-  def propagate[T <: { def toMinutes: Long}](duration: T) : KeplerCoord[F]
   
   import tlec._
-
   import tle._
-  import spire.implicits._
-   
-  def isDeepSpacePeriod : Boolean = {
-    val a : F = Fractional[F].fromDouble(0.15625 / (2*pi))
-    val b : F = 1 / (xn0dp * MINUTES_PER_DAY)
-    b >= a
-  }
   
-  def isDeepSpace : Boolean = isDeepSpacePeriod
-
-  
-//  def meanMotion0 = (meanMotion / pi) * 43200
   def epoch = 1000 * year + refepoch
 
   // Intermediate values used by the propagator models
@@ -65,7 +52,7 @@ abstract class BaseSGP[F: Fractional : Trig](tle : TLE[F], tlec : TLEConstants[F
    val (s4, q0ms24) : (F, F) = 
      if (perige < 156) {
 	     //  For perigee below 156 km, the values of s and QOMS2T are changed :
-	     val s4t : F = if (perige <= 98) 20 else perige - 78
+	     val s4t : F = if (perige <= 98) 20.as[F] else perige - 78
 	     val temp_val = (120 - s4t) * NEQR / EARTH_RADIUS
        // new value for (s, q0ms2T) 
        (s4t / EARTH_RADIUS + NEQR, temp_val pow 4)  
@@ -118,6 +105,11 @@ abstract class BaseSGP[F: Fractional : Trig](tle : TLE[F], tlec : TLEConstants[F
     val xnodot = xhdot1 + (temp2 * (4 - 19*theta2) / 2 + 2*temp3 * (3 - 7*theta2)) * cosi0
     val xnodcf = 3.5 * beta02 * xhdot1 * c1
     val t2cof  = 3 * c1 / 2
+    
+  // would this method  be better in a typeclass for TLE?
+  def isDeepSpacePeriod : Boolean = (0.15625.as[F] / (2*pi)) < (1.as[F] / (xn0dp * MINUTES_PER_DAY))  
+  def isDeepSpace : Boolean = isDeepSpacePeriod
+    
 }
 
 

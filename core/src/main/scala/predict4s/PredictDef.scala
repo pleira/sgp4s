@@ -1,7 +1,6 @@
 package predict4s
 
-import spire.math.Fractional
-import spire.algebra.Trig
+import spire.algebra.{Field, Order, Trig}
 import spire.implicits._
 
 /**
@@ -31,7 +30,7 @@ import spire.implicits._
  * @param ν true anomaly [rad]
  * 
  */
-class KeplerCoord[F : Fractional: Trig](
+class KeplerCoord[F : Field : Order : Trig](
   val a : F,      
   val e : F,      
   val i : F,      
