@@ -3,14 +3,14 @@ import spire.algebra.{Field,Trig,NRoot,Order,IsReal}
 import spire.math._
 import spire.implicits._
 
-class PVConverter[F: Field: NRoot: Trig: IsReal](implicit tlec : TLEConstants[F]) {
+class PVConverter[F: Field: NRoot: Trig: IsReal](tlec : StandardReferenceConstants[F]) {
   import tlec._
   
   // TODO: away with this method by having degrees and radians
    private def normalizeAngle(a : F, center: F) : F = 
      a - 2*pi * floor((a + pi - center) / (2* pi))
 
-  def coord(kc: TEME.KeplerCoord[F]): TEME.PosVel[F]  = {
+  def coord(kc: TEME.OrbitalElements[F]): TEME.PosVel[F]  = {
     import kc._
     val xl = trueAnomaly
     val raan = rightAscension

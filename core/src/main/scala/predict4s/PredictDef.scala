@@ -11,7 +11,7 @@ case class ReferenceSystem(val name: String) {
     def trueAnomaly : F
   }
   
-  case class KeplerCoord[F](val a : F, val e : F, val i : F, val ω : F, val Ω : F, val ν : F) extends KeplerianElements[F] {
+  case class OrbitalElements[F](val a : F, val e : F, val i : F, val ω : F, val Ω : F, val ν : F) extends KeplerianElements[F] {
     def semiMajorAxis = a
     def eccentricity = e
     def inclination = i

@@ -50,7 +50,7 @@ class TLE_PropagatorSpec extends FunSuite
 	      
   test("TLE_LEO Slave Mode") {
     val duration   = 2341.4889653027058 // in minutes
-    val finalState = new SGP4[Double](ValuesTLE(tle_leo), TLEConstants.tleDoubleConstants).propagate(duration)
+    val finalState = new SGP4[Double](InitialTleValues(tle_leo), WGS72Constants.tleDoubleConstants).propagate(duration)
     
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-9)
 

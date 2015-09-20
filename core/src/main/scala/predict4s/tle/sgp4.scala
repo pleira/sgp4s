@@ -16,7 +16,7 @@ import scala.{ specialized => spec }
  * of first-order, short-period perturbation amplitudes due to J2. 
  * (from Space Debris, by H. Klinkrad, pag 216).
  */ 
-class SGP4[F : Field : NRoot : Order : Trig](tle: InitialTleValues[F], tlec : TLEConstants[F]) extends BaseSGP[F](tle, tlec)  {
+class SGP4[F : Field : NRoot : Order : Trig](tle: InitialTleValues[F], tlec : StandardReferenceConstants[F]) extends BaseSGP[F](tle, tlec)  {
 
   import tle._
   import tlec._ 
@@ -36,9 +36,9 @@ class SGP4[F : Field : NRoot : Order : Trig](tle: InitialTleValues[F], tlec : TL
       val _t5cof     = (3 * _d4 + 12 * c1 * _d3 + 6 * _d2 * _d2 + 15 * c1sq * (2 * _d2 + c1sq)) / 5
       val _sinM0     = sin(meanAnomaly)
       val (_xmcof, _omgcof) : (F, F) = 
-        if (e < 1e-4.as[F]) (0.as[F], 0.as[F])
+        if (e0 < 1e-4.as[F]) (0.as[F], 0.as[F])
         else  {
-          val c3 = coef * tsi * A3OVK2 * xn0dp * NEQR * sini0 / e
+          val c3 = coef * tsi * A3OVK2 * xn0dp * NEQR * sini0 / e0
           (- TWO_THIRD * coef * tle.bStar * NEQR / eeta, 
            bStar * c3 * cos(pa))
         }
@@ -56,7 +56,7 @@ class SGP4[F : Field : NRoot : Order : Trig](tle: InitialTleValues[F], tlec : TL
   // initialized
         
   // TODO: propagation should return a new TLE
-  def propagate(duration: F) : TEME.KeplerCoord[F] = {
+  def propagate(duration: F) : TEME.OrbitalElements[F] = {
     val tSince = duration   // in Minutes
     // Update for secular gravity and atmospheric drag.
     val xmdf0  =  xmdot * tSince
@@ -92,9 +92,7 @@ class SGP4[F : Field : NRoot : Order : Trig](tle: InitialTleValues[F], tlec : TL
     val xn = KE / (a pow 1.5)
     val xl = xmp + omega + xnode + xn0dp * templ
 
-    // this is in the TEME system of reference
-    TEME.KeplerCoord[F](a, e_new, i, omega, xnode, xl)
-    // We should return with path dependent types here
+    TEME.OrbitalElements[F](a, e_new, i, omega, xnode, xl)
   }
 
 }

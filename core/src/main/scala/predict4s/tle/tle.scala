@@ -4,9 +4,6 @@
  */
 package predict4s.tle {
 
-import spire.algebra.Trig
-import spire.algebra.Field
-
 // No double mumeric conversions done here, so double values are returned as Strings
 trait TLE {
   def lineNumber: Int
@@ -44,7 +41,7 @@ object TLE {
                       "[ 0-9]{3}[.][ 0-9]{4} [ 0-9]{3}[.][ 0-9]{4} [ 0-9]{2}[.][ 0-9]{13}[ 0-9]")
 
 
-  def apply[F: Field](line1 : String, line2: String ) : TLE = new TLE {
+  def apply[F](line1 : String, line2: String ) : TLE = new TLE {
     def lineNumber = parseInt(line1, 1, 1)
       def satelliteNumber = parseInt(line1, 2, 5)
       def classification  = line1.charAt(7)
@@ -126,18 +123,6 @@ object TLE {
     if (year > 2056) (year - 100) else year
   }
 
-}
-
-case class InitialTleValues[F](tle: TLE)(implicit ev: Trig[F], f: Field[F]) {
-  val e = tle.eccentricity.toDouble.as[F]
-  val i = ev.toRadians(tle.inclination.toDouble.as[F])
-  val pa =  ev.toRadians(tle.argumentOfPeriapsis.toDouble.as[F])
-  val raan = ev.toRadians(tle.rightAscension.toDouble.as[F])
-  val meanAnomaly =  ev.toRadians(tle.meanAnomaly.toDouble.as[F])
-  val meanMotion = tle.meanMotion.toDouble.as[F]
-  val refepoch = tle.epoch.toDouble.as[F]
-  val year = tle.year
-  val bStar = tle.atmosphericDragCoeficient.toDouble.as[F]
 }
 
 

@@ -8,19 +8,27 @@ import spire.implicits._
 /**
  * Contains the common bits across the TLE propagation algorithms SGP4 and SGP8
  */
-class BaseSGP[F: Field: NRoot : Order : Trig](tle : InitialTleValues[F], tlec : TLEConstants[F])   {
+class BaseSGP[F: Field: NRoot : Order : Trig](tle : InitialTleValues[F], tlec : StandardReferenceConstants[F])   {
   
   
   import tlec._
   import tle._
   
-  def epoch = 1000 * year + refepoch
-
+  val ONE_THIRD = (1.0/3.0).as[F]
+  val TWO_THIRD = (2.0/3.0).as[F]
+  val NEQR = 1.as[F]
+  val CK4 = J4
+//CK4 = .62098875E-6 //  J4
+  val EARTH_RADIUS = aE
+  val S = 1.01222928.as[F]
+  val QOMS2T = 1.88027916E-9.as[F]
+  val MINUTES_PER_DAY = 1440.as[F]
+  
   // Intermediate values used by the propagator models
   val cosi0 = cos(i)       
   def r1 = cosi0
   val theta2  = cosi0 * cosi0
-  val e0sq = e * e 
+  val e0sq = e * e0 
   val xno = meanMotion * 3 * pi / 2160 
 
   val a1 = (KE / xno) fpow (TWO_THIRD)

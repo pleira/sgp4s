@@ -52,10 +52,10 @@ class Official_TLE_Spec extends FunSuite
   test("Oficial SGP4 prediction") {
     // instead of import spire.implicits._ for doubles I can do
     val tle : TLE = TLE(tle_11, tle_12)
-    val vtle = ValuesTLE(tle)
-    val prop = new SGP4(vtle, TLEConstants.tleDoubleConstants)
+    val vtle = InitialTleValues(tle)
+    val prop = new SGP4(vtle, WGS72Constants.tleDoubleConstants)
     assert(!prop.isDeepSpace)
-    val pvconv = new PVConverter[Double]()
+    val pvconv = new PVConverter[Double](WGS72Constants.tleDoubleConstants)
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)
     expectedSGP4.keys foreach {min => 
       val kc = prop.propagate(min)

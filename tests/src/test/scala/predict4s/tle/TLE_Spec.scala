@@ -25,7 +25,7 @@ class Step1_Spec extends FunSuite
         assert(2002 == tle.launchYear)
         assert(21 == tle.launchNumber)
         assert("A" == tle.launchPiece)
-        assert(-0.0089879 == tle.dragCoeficient.toDouble)
+        assert(-0.0089879 == tle.atmosphericDragCoeficient.toDouble)
         assert(0 == tle.ephemerisType)
         assert(98.749 === tle.inclination.toDouble)
         assert(199.5121 === tle.rightAscension.toDouble)
