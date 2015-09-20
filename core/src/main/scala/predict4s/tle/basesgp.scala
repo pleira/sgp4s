@@ -29,7 +29,7 @@ class BaseSGP[F: Field: NRoot : Order : Trig](tle : InitialTleValues[F], tlec : 
   def r1 = cosi0
   val theta2  = cosi0 * cosi0
   val e0sq = e * e0 
-  val xno = meanMotion * 3 * pi / 2160 
+  val xno = meanMotion * 3 * pi / 21600 
 
   val a1 = (KE / xno) fpow (TWO_THIRD)
   val x3thm1 = 3 * theta2 - 1

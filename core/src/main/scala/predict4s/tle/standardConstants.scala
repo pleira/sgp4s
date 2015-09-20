@@ -27,9 +27,11 @@ trait StandardReferenceConstants[F] {
   def CK2: F  // = 5.413080E-4.as[F] // 1/2 J2aE
   def K2: F = CK2
   
-  def A3OVK2 : F // [F: Field: Signed] : F = - J3 / CK2
+  // def A3OVK2[F: Field: Signed] : F = - J3 / CK2
 
-  // def K2: F   // units of (Earth radii) ]
+  // def A30[F: Field: Signed]  =   - J3 * aE * aE * aE 
+  def A30 : F
+  def A3OVK2 : F // def K2: F   // units of (Earth radii) ]
 }
 
 class WGS72OldConstants[F: Field]() extends StandardReferenceConstants[F] {
@@ -42,31 +44,33 @@ class WGS72OldConstants[F: Field]() extends StandardReferenceConstants[F] {
   
   val CK2: F = 5.413080E-4.as[F] // 1/2 J2aE
   val A3OVK2 : F = - J3 / CK2
+  def A30 =   - J3 * aE * aE * aE
 }
 
 class WGS72Constants[F: Field: NRoot]() extends StandardReferenceConstants[F] {
   val MU     =   398600.79964.as[F] 
   val aE     =   6378.135.as[F]
-  val KE     =   60 / (aE**3 / MU).sqrt
+  val KE     =   60 / (aE* aE * aE/ MU).sqrt
   val J2     =   0.001082616.as[F]
   val J3     =  -0.00000253881.as[F]
   val J4     =  -0.00000165597.as[F]
   
   val CK2: F = 5.413080E-4.as[F] // 1/2 J2aE
   val A3OVK2 : F = - J3 / CK2
-  
+  def A30  =   - J3 * aE * aE * aE 
 }
 
 class WGS84Constants[F: Field: NRoot]() extends StandardReferenceConstants[F] {
   val MU     =   398600.5.as[F]            
   val aE     =   6378.137.as[F]
-  val KE     =   60 / (aE**3 / MU).sqrt
+  val KE     =   60 / (aE* aE * aE/ MU).sqrt
   val J2     =   0.00108262998905.as[F]
   val J3     =  -0.00000253215306.as[F]
   val J4     =  -0.00000161098761.as[F]
   
   val CK2: F = 5.413080E-4.as[F] // 1/2 J2aE  
   val A3OVK2 : F = - J3 / CK2
+  def A30  =   - J3 * aE * aE * aE
 }
 
 object WGS72Constants {
