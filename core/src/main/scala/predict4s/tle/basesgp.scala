@@ -8,7 +8,7 @@ import spire.implicits._
 /**
  * Contains the common bits across the TLE propagation algorithms SGP4 and SGP8
  */
-class BaseSGP[F: Field: NRoot : Order : Trig](tle : TLE[F], tlec : TLEConstants[F])   {
+class BaseSGP[F: Field: NRoot : Order : Trig](tle : InitialTleValues[F], tlec : TLEConstants[F])   {
   
   
   import tlec._

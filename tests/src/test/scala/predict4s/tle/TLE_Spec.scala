@@ -17,7 +17,7 @@ class Step1_Spec extends FunSuite
         object ddd extends spire.std.DoubleInstances
         import ddd.DoubleAlgebra
 
-        val tle : TLE[Double] = TLE(line1, line2)
+        val tle : TLE = TLE(line1, line2)
         
         implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1e-10)
        
@@ -25,14 +25,14 @@ class Step1_Spec extends FunSuite
         assert(2002 == tle.launchYear)
         assert(21 == tle.launchNumber)
         assert("A" == tle.launchPiece)
-        assert(-0.0089879 == tle.bStar)
+        assert(-0.0089879 == tle.dragCoeficient.toDouble)
         assert(0 == tle.ephemerisType)
-        assert(98.749 === tle.iDeg)
-        assert(199.5121 === tle.raanDeg)
-        assert(0.0001333 === tle.e)
-        assert(133.9522 === tle.paDeg)
-        assert(226.1918 === tle.meanAnomalyDeg)
-        assert(14.26113993 === tle.meanMotion)
+        assert(98.749 === tle.inclination.toDouble)
+        assert(199.5121 === tle.rightAscension.toDouble)
+        assert(0.0001333 === tle.eccentricity.toDouble)
+        assert(133.9522 === tle.argumentOfPeriapsis.toDouble)
+        assert(226.1918 === tle.meanAnomaly.toDouble)
+        assert(14.26113993 === tle.meanMotion.toDouble)
         assert(tle.revolutionNumberAtEpoch == 6)
         assert(tle.elementNumber == 2)
   }

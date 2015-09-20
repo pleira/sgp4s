@@ -12,6 +12,8 @@ class PVConverter[F: Field: NRoot: Trig: IsReal](implicit tlec : TLEConstants[F]
 
   def coord(kc: TEME.KeplerCoord[F]): TEME.PosVel[F]  = {
     import kc._
+    val xl = trueAnomaly
+    val raan = rightAscension
     val sini0 = sin(i)
     val cosi0 = cos(i)
     val axn = e * cos(ω)

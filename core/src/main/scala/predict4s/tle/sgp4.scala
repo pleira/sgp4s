@@ -16,7 +16,7 @@ import scala.{ specialized => spec }
  * of first-order, short-period perturbation amplitudes due to J2. 
  * (from Space Debris, by H. Klinkrad, pag 216).
  */ 
-class SGP4[F : Field : NRoot : Order : Trig](tle: TLE[F], tlec : TLEConstants[F]) extends BaseSGP[F](tle, tlec)  {
+class SGP4[F : Field : NRoot : Order : Trig](tle: InitialTleValues[F], tlec : TLEConstants[F]) extends BaseSGP[F](tle, tlec)  {
 
   import tle._
   import tlec._ 
@@ -40,7 +40,7 @@ class SGP4[F : Field : NRoot : Order : Trig](tle: TLE[F], tlec : TLEConstants[F]
         else  {
           val c3 = coef * tsi * A3OVK2 * xn0dp * NEQR * sini0 / e
           (- TWO_THIRD * coef * tle.bStar * NEQR / eeta, 
-           tle.bStar * c3 * cos(pa))
+           bStar * c3 * cos(pa))
         }
       (_d2, _d3, _d4, _t3cof, _t4cof, _t5cof, _omgcof, _xmcof, _sinM0, _delM0)
     }

@@ -42,17 +42,18 @@ class Official_TLE_Spec extends FunSuite
  
   def check(result: TEME.PosVel[Double], expected: TEME.PosVel[Double])
      (implicit ev: org.scalautils.Equality[Double]) {
-//    can we have tolerance for container comparisons?
-//    result._1 should === (expected._1)
-//    result._2 should === (expected._2)
+//   If can we have tolerance for container comparisons, use this other version
+//    result.p should === (expected.p)
+//    result.v should === (expected.v)
     (result.p zip expected.p)  foreach {x => assert(x._1 === x._2, "position")}
     (result.v zip expected.v)  foreach {x => assert(x._1 === x._2, "velocity")}
   }
     
   test("Oficial SGP4 prediction") {
     // instead of import spire.implicits._ for doubles I can do
-    val tle : TLE[Double] = TLE(tle_11, tle_12)
-    val prop = new SGP4(tle, TLEConstants.tleDoubleConstants)
+    val tle : TLE = TLE(tle_11, tle_12)
+    val vtle = ValuesTLE(tle)
+    val prop = new SGP4(vtle, TLEConstants.tleDoubleConstants)
     assert(!prop.isDeepSpace)
     val pvconv = new PVConverter[Double]()
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(0.012)

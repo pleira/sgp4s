@@ -39,7 +39,7 @@ class TLE_PropagatorSpec extends FunSuite
   object ddd extends spire.std.DoubleInstances
   import ddd.DoubleAlgebra
 
-  final val tle_leo : TLE[Double] = 
+  final val tle_leo : TLE = 
     TLE("1 28375U 04025K   09105.66391970  .00000003  00000-0  13761-4 0  3643",
 	    "2 28375 098.0551 118.9086 0084159 315.8041 043.6444 14.40638450251959")
 			
@@ -50,7 +50,7 @@ class TLE_PropagatorSpec extends FunSuite
 	      
   test("TLE_LEO Slave Mode") {
     val duration   = 2341.4889653027058 // in minutes
-    val finalState = new SGP4[Double](tle_leo, TLEConstants.tleDoubleConstants).propagate(duration)
+    val finalState = new SGP4[Double](ValuesTLE(tle_leo), TLEConstants.tleDoubleConstants).propagate(duration)
     
     implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-9)
 
