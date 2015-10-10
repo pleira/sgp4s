@@ -8,11 +8,11 @@ import spire.implicits._
 /**
  * Contains the common bits across the TLE propagation algorithms SGP4 and SGP8
  */
-class BaseSGP[F: Field: NRoot : Order : Trig](tle : InitialTleValues[F], tlec : StandardReferenceConstants[F])   {
+class BaseSGP[F: Field: NRoot : Order : Trig](ti : InitialTleValues[F], wgs : WGSConstants[F])   {
   
   
-  import tlec._
-  import tle._
+  import ti._
+  import wgs._
   
   val ONE_THIRD = (1.0/3.0).as[F]
   val TWO_THIRD = (2.0/3.0).as[F]
@@ -25,7 +25,7 @@ class BaseSGP[F: Field: NRoot : Order : Trig](tle : InitialTleValues[F], tlec : 
   val MINUTES_PER_DAY = 1440.as[F]
   
   // Intermediate values used by the propagator models
-  val cosi0 = cos(i)       
+  val cosi0 = cos(i0)       
   def r1 = cosi0
   val theta2  = cosi0 * cosi0
   val e0sq = e * e0 
@@ -45,7 +45,7 @@ class BaseSGP[F: Field: NRoot : Order : Trig](tle : InitialTleValues[F], tlec : 
   // the original mean motion
   val xn0dp = xno /(delta0 + 1)   
 
-  val incl = i                   // already in Radians 
+  val incl = i0                   // already in Radians 
   val nodeo = raan               // already Radians
   val omegao = pa                // argper // already Radians 
   val xmo = meanAnomaly          // already in Radians
@@ -84,7 +84,7 @@ class BaseSGP[F: Field: NRoot : Order : Trig](tle : InitialTleValues[F], tlec : 
     val c2    = coef1 * xn0dp * (a0dp * (1 + 1.5*etasq + eeta * (4 + etasq)) + 
                     0.75*CK2 * tsi/psisq * x3thm1 *(8 + 3*etasq * (8 + etasq)))
     val c1    = bStar * c2
-    val sini0 = sin(i)    
+    val sini0 = sin(i0)    
     // val cosi0 = cos(i)  
 //    val a3ovk2 = -XJ3 / CK2
 //    val c3 = coef * tsi * a3ovk2 * xn0dp * sini0 / e
@@ -106,7 +106,11 @@ class BaseSGP[F: Field: NRoot : Order : Trig](tle : InitialTleValues[F], tlec : 
     val temp3  = 1.25 * CK4 * pinvsq * pinvsq * xn0dp
 
     // atmospheric and gravitation coefs :(Mdf and OMEGAdf)
+    // dot means derivative
+    // derivative of the MeanMotion
     val xmdot  = xn0dp + temp1 * beta0 * x3thm1 / 2 + 0.0625*temp2 * beta0 * (13 - 78*theta2 + 137*theta4)
+    
+    // derivative of the omega, the argument of the perigee
     val x1m5th = 1 - 5*theta2
     val omgdot = -temp1 * x1m5th / 2 + 0.0625*temp2 * (7 - 114*theta2 + 395*theta4) + temp3*(3 - 36*theta2 + 49*theta4)
     val xhdot1 = -temp1 * cosi0

@@ -3,7 +3,7 @@ import spire.algebra._
 import spire.math._
 import spire.implicits._
 
-trait StandardReferenceConstants[F] {
+trait WGSConstants[F] {
 
   /** sqrt(Grativational Constant * Earths's Mass) */
   def MU: F
@@ -24,67 +24,70 @@ trait StandardReferenceConstants[F] {
   /** J3 spherical harmonic value */
   def J4: F  
 
-  def CK2: F  // = 5.413080E-4.as[F] // 1/2 J2aE
-  def K2: F = CK2
-  
-  // def A3OVK2[F: Field: Signed] : F = - J3 / CK2
-
-  // def A30[F: Field: Signed]  =   - J3 * aE * aE * aE 
+  def CK2: F = K2 // = 5.413080E-4.as[F] // 1/2 J2aE
+  def CK4: F = K4  // = -3*J4* aE * aE * aE * aE / 8
+  def K2: F 
+  def K4: F 
   def A30 : F
   def A3OVK2 : F // def K2: F   // units of (Earth radii) ]
 }
 
-class WGS72OldConstants[F: Field]() extends StandardReferenceConstants[F] {
+abstract class WGS[F: Field]() extends WGSConstants[F] {
+  def K2    = J2 * aE * aE / 2
+  def K4    = -3*J4* aE * aE * aE * aE / 8
+  def A3OVK2 = - J3 / K2
+  def A30    = - J3 * aE * aE * aE
+  override def CK2   = K2
+  override def CK4   = K4
+}
+
+// old WGS72 constants
+class WGS721Constants[F: Field]() extends WGS[F] {
   val MU     =   398600.8.as[F]
   val aE     =   6378.135.as[F]
   val KE     =   0.0743669161.as[F] 
   val J2     =   0.001082616.as[F]
   val J3     =  -0.00000253881.as[F]
-  val J4     =  -0.00000165597.as[F]
-  
-  val CK2: F = 5.413080E-4.as[F] // 1/2 J2aE
-  val A3OVK2 : F = - J3 / CK2
-  def A30 =   - J3 * aE * aE * aE
+  val J4     =  -0.00000165597.as[F]  
+  override val K2     =   super.K2
+  override val K4     =   super.K4
 }
 
-class WGS72Constants[F: Field: NRoot]() extends StandardReferenceConstants[F] {
+class WGS72Constants[F: Field]() extends WGS[F] {
   val MU     =   398600.79964.as[F] 
   val aE     =   6378.135.as[F]
-  val KE     =   60 / (aE* aE * aE/ MU).sqrt
+  val KE     =   0.07436691613317.as[F]       //   60 / (aE* aE * aE/ MU).sqrt  // /min
   val J2     =   0.001082616.as[F]
   val J3     =  -0.00000253881.as[F]
-  val J4     =  -0.00000165597.as[F]
-  
-  val CK2: F = 5.413080E-4.as[F] // 1/2 J2aE
-  val A3OVK2 : F = - J3 / CK2
-  def A30  =   - J3 * aE * aE * aE 
+  val J4     =  -0.00000165597.as[F]  
+  override val K2     =   super.K2
+  override val K4     =   super.K4
 }
 
-class WGS84Constants[F: Field: NRoot]() extends StandardReferenceConstants[F] {
+class WGS84Constants[F: Field]() extends WGS[F] {
   val MU     =   398600.5.as[F]            
   val aE     =   6378.137.as[F]
-  val KE     =   60 / (aE* aE * aE/ MU).sqrt
+  val KE     =   0.07436685316871.as[F]   //   60 / (aE* aE * aE/ MU).sqrt   //  /min
   val J2     =   0.00108262998905.as[F]
   val J3     =  -0.00000253215306.as[F]
   val J4     =  -0.00000161098761.as[F]
-  
-  val CK2: F = 5.413080E-4.as[F] // 1/2 J2aE  
-  val A3OVK2 : F = - J3 / CK2
-  def A30  =   - J3 * aE * aE * aE
+  override val K2     =   super.K2
+  override val K4     =   super.K4
+}
+
+object WGS721Constants {
+  implicit lazy val tleDoubleConstants = new WGS721Constants[Double]()  
+  implicit lazy val tleRealConstants = new WGS721Constants[Real]()
 }
 
 object WGS72Constants {
-  
-  implicit val tleDoubleConstants = new WGS72Constants[Double]()  
-  implicit val tleRealConstants = new WGS72Constants[Real]()
-  
+  implicit lazy val tleDoubleConstants = new WGS72Constants[Double]()  
+  implicit lazy val tleRealConstants = new WGS72Constants[Real]()
 }
 
 object WGS84Constants {
-  
-  implicit val tleDoubleConstants = new WGS84Constants[Double]()  
-  implicit val tleRealConstants = new WGS84Constants[Real]()
-  
+  implicit lazy val tleDoubleConstants = new WGS84Constants[Double]()  
+  implicit lazy val tleRealConstants = new WGS84Constants[Real]() 
 }
 
 // Variable name Definition Value as given in Hoots document

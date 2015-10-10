@@ -41,7 +41,7 @@ object TLE {
                       "[ 0-9]{3}[.][ 0-9]{4} [ 0-9]{3}[.][ 0-9]{4} [ 0-9]{2}[.][ 0-9]{13}[ 0-9]")
 
 
-  def apply[F](line1 : String, line2: String ) : TLE = new TLE {
+  def apply(line1 : String, line2: String ) : TLE = new TLE {
     def lineNumber = parseInt(line1, 1, 1)
       def satelliteNumber = parseInt(line1, 2, 5)
       def classification  = line1.charAt(7)
@@ -50,8 +50,10 @@ object TLE {
       def launchPiece     = line1.substring(14, 17).trim
       def ephemerisType   = parseInt(line1, 62, 1)
       def elementNumber   = parseInt(line1, 64, 4)
-      def year            = parseInt(line1, 18, 2)
-      def epoch        = parse(line1, 20, 12)
+      def epochyear       = parseInt(line1, 18, 2)
+      def year            = epochyear + (if (epochyear < 57)  2000 else 1900)
+      
+      def epoch           = parse(line1, 20, 12)
       // rev/day, 2 * rev/day^2 and 6 * rev/day^3 
       def meanMotion                 = parse(line2, 52, 11)
 //        drag                       = line1.parseDouble(33, 10),
@@ -121,6 +123,25 @@ object TLE {
   def parseYear(line : String, start: Int) : Int = {
     val year = 2000 + parseInt(line, start, 2)
     if (year > 2056) (year - 100) else year
+  }
+
+
+  def parseFile(path: String) : List[TLE] = {
+    val input = io.Source.fromInputStream(getClass.getResourceAsStream(path))
+    val iter = input.getLines()
+    var tmplist = List[TLE]() // scala.collection.mutable.LinkedList[TLE]();
+    while (iter.hasNext) {
+      val line1 = iter.next()
+      if (!line1.startsWith("#")) {
+        val line2 = iter.next()
+        if (!line2.startsWith("#")) {
+          tmplist = TLE.apply(line1, line2) :: tmplist
+        }
+      }
+    }
+    input.close()
+    val tles = tmplist.reverse
+    tles
   }
 
 }

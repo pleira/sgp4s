@@ -16,10 +16,10 @@ import scala.{ specialized => spec }
  * of first-order, short-period perturbation amplitudes due to J2. 
  * (from Space Debris, by H. Klinkrad, pag 216).
  */ 
-class SGP4[F : Field : NRoot : Order : Trig](tle: InitialTleValues[F], tlec : StandardReferenceConstants[F]) extends BaseSGP[F](tle, tlec)  {
+class SGP4[F : Field : NRoot : Order : Trig](ti: InitialTleValues[F], wgs : WGSConstants[F]) extends BaseSGP[F](ti, wgs)  {
 
-  import tle._
-  import tlec._ 
+  import ti._
+  import wgs._ 
    
   def simple : Boolean = perige < 220
 
@@ -39,7 +39,7 @@ class SGP4[F : Field : NRoot : Order : Trig](tle: InitialTleValues[F], tlec : St
         if (e0 < 1e-4.as[F]) (0.as[F], 0.as[F])
         else  {
           val c3 = coef * tsi * A3OVK2 * xn0dp * NEQR * sini0 / e0
-          (- TWO_THIRD * coef * tle.bStar * NEQR / eeta, 
+          (- TWO_THIRD * coef * bStar * NEQR / eeta, 
            bStar * c3 * cos(pa))
         }
       (_d2, _d3, _d4, _t3cof, _t4cof, _t5cof, _omgcof, _xmcof, _sinM0, _delM0)
@@ -92,7 +92,7 @@ class SGP4[F : Field : NRoot : Order : Trig](tle: InitialTleValues[F], tlec : St
     val xn = KE / (a pow 1.5)
     val xl = xmp + omega + xnode + xn0dp * templ
 
-    TEME.OrbitalElements[F](a, e_new, i, omega, xnode, xl)
+    TEME.OrbitalElements[F](a, e_new, i0, omega, xnode, xl)
   }
 
 }

@@ -11,6 +11,7 @@ case class ReferenceSystem(val name: String) {
     def trueAnomaly : F
   }
   
+  // TODO relate to spire's VectorSpaces 
   case class OrbitalElements[F](val a : F, val e : F, val i : F, val ω : F, val Ω : F, val ν : F) extends KeplerianElements[F] {
     def semiMajorAxis = a
     def eccentricity = e
@@ -20,11 +21,10 @@ case class ReferenceSystem(val name: String) {
     def trueAnomaly = ν
     override def toString = s"a: $a, e: $e, i: $i, raan: $Ω, ω: $ω, true anomaly: $trueAnomaly"
   }
-  // remove Vector restriction when tests can traverse the collection
-  case class PosVel[F](val p : Vector[F], v : Vector[F])
-  // case class PosVel[F](val p : GenTraversable[F], v : GenTraversable[F])   
+  case class PosVel[F](val p : IndexedSeq[F], v : IndexedSeq[F])
+  
 }
 
-// can we do without exceptions?
+// can we do without exceptions, just scala.util.Try?
 case class Predict4sException(msg: String) extends Exception 
 

@@ -3,19 +3,18 @@ import spire.algebra.{Field,Trig,NRoot,Order,IsReal}
 import spire.math._
 import spire.implicits._
 
-class PVConverter[F: Field: NRoot: Trig: IsReal](tlec : WGSConstants[F]) {
+class PosVelConv[F: Field: NRoot: Trig: IsReal](tlec : WGSConstants[F]) {
   import tlec._
   
   // TODO: away with this method by having degrees and radians
    private def normalizeAngle(a : F, center: F) : F = 
      a - 2*pi * floor((a + pi - center) / (2* pi))
 
-  def coord(kc: TEME.OrbitalElements[F]): TEME.PosVel[F]  = {
+  def coord(ti: SGP4TimeIndependentFunctions[F], kc: TEME.OrbitalElements[F]): (SGP4TimeIndependentFunctions[F], TEME.PosVel[F])  = {
     import kc._
+    import ti._
     val xl = trueAnomaly
     val raan = rightAscension
-    val sini0 = sin(i)
-    val cosi0 = cos(i)
     val axn = e * cos(ω)
     val temp : F = 1 / (a * (1 - e * e))
     val xlcof = 0.125 * A3OVK2 * sini0 * (3 + 5 * cosi0) / (1 + cosi0)
@@ -106,7 +105,7 @@ class PVConverter[F: Field: NRoot: Trig: IsReal](tlec : WGSConstants[F]) {
     val v_u = rdotk *: Vector(ux, uy, uz)
     val v_v = rfdotk *: Vector(xmx * cosuk - cosnok * sinuk, xmy * cosuk - sinnok * sinuk,  sinik * cosuk)
     val vel = (EARTH_RADIUS / 60) *: (v_v + v_u) 
-    TEME.PosVel(pos, vel)
+    (ti, TEME.PosVel(pos, vel))
   }
   
 }
