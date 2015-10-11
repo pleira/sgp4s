@@ -22,6 +22,19 @@ case class ReferenceSystem(val name: String) {
     override def toString = s"a: $a, e: $e, i: $i, raan: $Ω, ω: $ω, true anomaly: $trueAnomaly"
   }
   case class PosVel[F](val p : IndexedSeq[F], v : IndexedSeq[F])
+
+case class SGPElements[F](
+    n0 : F, // mean motion 
+    e0 : F, // eccentricity
+    i0 : F, // inclination
+    ω0 : F, // argument Of perigee
+    Ω0 : F, // right ascension ascending node
+    M0 : F, // mean anomaly
+    bStar : F, // atmospheric Drag Coeficient
+    epoch : F) 
+{
+  
+}
   
 }
 

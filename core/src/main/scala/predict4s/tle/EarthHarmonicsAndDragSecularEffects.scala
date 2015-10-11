@@ -14,14 +14,24 @@ trait EarthHarmonicsAndDragSecularEffects {
   
   /** t is the duration in minutes from the epoch , then the SGP4 Time Independent Functions */
   def propagate[F: Field: NRoot : Order: Trig](t: F)(tind: SGP4TimeIndependentFunctions[F])
-         : (SGP4TimeIndependentFunctions[F], TEME.OrbitalElements[F]) = {
-    import tind.ini._
+  (implicit wgs : WGSConstants[F])
+         : (SGP4TimeIndependentFunctions[F], TEME.SGPElements[F]) = {
     import tind._
-    import tind.wgs.KE
+    import tind.i0f._
+    import tind.e0f._
+    import tind.ocf._
+    import tind.coeff._
+    import tind.sf._
+    import tind.bmmf._
+    import tind.ilf._    
+    import wgs.KE
+    
+    // fixme: it needs to be provided
+    val refepoch = 0.as[F]
     
     val ωdf : F = ω0 + ωdot*t
     val Ωdf : F = Ω0 + Ωdot*t
-    val Mdf : F = M0 + Mdot*t
+    val Mdf : F = M0 + mdot*t
     
     val t2 = t*t
     val Ωm = Ωdf + Ωcof*t2 // nodem, right asc of ascending node
@@ -66,7 +76,7 @@ trait EarthHarmonicsAndDragSecularEffects {
 //     nm = xke / pow(am, 1.5)
     
     // am as in Vallado's code. Check as well Hoot's: val am = a0 * tempa**2 
-    val am = (KE/n0) fpow TWO_THIRD * tempa*tempa  
+    val am = (KE/n0) fpow (2.0/3.0).as[F] * tempa*tempa  
     
     val nm = KE / (am fpow 1.5.as[F]) // mean motion
     val emt = e0 - tempe
@@ -77,7 +87,7 @@ trait EarthHarmonicsAndDragSecularEffects {
        {
          // sgp4fix to return if there is an error in eccentricity
          // return false;
-        return (tind, TEME.OrbitalElements[F](am, emt, i0, ωm, Ωm, _Mp))  
+        return (tind, TEME.SGPElements[F](am, emt, i0, ωm, Ωm, _Mp, bStar, refepoch))  
        }
 
      // sgp4fix fix tolerance to avoid a divide by zero
@@ -94,7 +104,8 @@ trait EarthHarmonicsAndDragSecularEffects {
      val lm      = xlm % twopi
      val Mm      = (lm - ω - Ω) % twopi
      
-    (tind, TEME.OrbitalElements[F](nm, em, i0, ω, Ω, Mm))  
+     // Better SGPElements (radpm0,e0,i0,pa,raan,M0,bStar,refepoch)
+    (tind, TEME.SGPElements[F](nm, em, i0, ω, Ω, Mm,bStar,refepoch))  
   }
    
 }

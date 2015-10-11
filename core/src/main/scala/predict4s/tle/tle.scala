@@ -77,9 +77,7 @@ object TLE {
   }
   
   def isFormatOK(line1: String, line2: String) : Boolean = {
-      if (line1 == null || line1.length() != 69 ||
-          line2 == null || line2.length() != 69 ||  
-          !LINE_1_PATTERN.matcher(line1).matches() ||
+      if (!LINE_1_PATTERN.matcher(line1).matches() ||
           !LINE_2_PATTERN.matcher(line2).matches()) 
          return false
 

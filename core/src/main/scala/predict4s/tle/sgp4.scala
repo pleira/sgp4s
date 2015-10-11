@@ -16,7 +16,7 @@ import scala.{ specialized => spec }
  * of first-order, short-period perturbation amplitudes due to J2. 
  * (from Space Debris, by H. Klinkrad, pag 216).
  */ 
-class SGP4[F : Field : NRoot : Order : Trig](ti: InitialTleValues[F], wgs : WGSConstants[F]) extends BaseSGP[F](ti, wgs)  {
+class SGP4[F : Field : NRoot : Order : Trig](ti: SGPElements[F], wgs : WGSConstants[F]) extends BaseSGP[F](ti, wgs)  {
 
   import ti._
   import wgs._ 
@@ -34,7 +34,7 @@ class SGP4[F : Field : NRoot : Order : Trig](ti: InitialTleValues[F], wgs : WGSC
       val _t3cof     = _d2 + 2 * c1sq
       val _t4cof     = (3 * _d3 + c1 * (12 * _d2 + 10 * c1sq)) / 4
       val _t5cof     = (3 * _d4 + 12 * c1 * _d3 + 6 * _d2 * _d2 + 15 * c1sq * (2 * _d2 + c1sq)) / 5
-      val _sinM0     = sin(meanAnomaly)
+      val _sinM0     = sin(M0)
       val (_xmcof, _omgcof) : (F, F) = 
         if (e0 < 1e-4.as[F]) (0.as[F], 0.as[F])
         else  {

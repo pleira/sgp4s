@@ -16,5 +16,8 @@ package object tle {
   }
 
   // true equator, mean equinox (TEME) (Herrick, 1971:325, 338, 341)
-  val TEME = ReferenceSystem("TEME");
+  val TEME = ReferenceSystem("TEME")
+  
+  def TWO_THIRD[F: Field] = (2.0/3.0).as[F]
+  
 }

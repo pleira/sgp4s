@@ -5,37 +5,37 @@ import spire.algebra.Field
 import spire.math.pi
 import spire.implicits._
 
-case class InitialTleValues[F: Field: Trig](tle: TLE) {
-  val e0 = tle.eccentricity.toDouble.as[F]
-  val i0 = tle.inclination.toDouble.toRadians.as[F]
-  val pa = tle.argumentOfPeriapsis.toDouble.toRadians.as[F]
-  val raan = tle.rightAscension.toDouble.toRadians.as[F]
-  val meanAnomaly =  tle.meanAnomaly.toDouble.toRadians.as[F]
-  def meanMotion = tle.meanMotion.toDouble.as[F]
-  val refepoch = tle.epoch.toDouble.as[F]
-  val year = tle.year
-  val bStar = tle.atmosphericDragCoeficient.toDouble.as[F]
 
-  // in days
-  val epoch = tle.epoch
 
+object SGPElements {
+ 
+  def apply[F: Field: NRoot: Trig](tle: TLE) :  TEME.SGPElements[F] = { 
+    val e0 = tle.eccentricity.toDouble.as[F]
+    val i0 = tle.inclination.toDouble.toRadians.as[F]
+    val pa = tle.argumentOfPeriapsis.toDouble.toRadians.as[F]
+    val raan = tle.rightAscension.toDouble.toRadians.as[F]
+    val meanAnomaly =  tle.meanAnomaly.toDouble.toRadians.as[F]
+    def meanMotion = tle.meanMotion.toDouble.as[F]
+    val refepoch = tle.epoch.toDouble.as[F]
+    val year = tle.year
+    val bStar = tle.atmosphericDragCoeficient.toDouble.as[F]
   
-  // follow Hoots notation here
-  //val n0 = meanMotion
-  // val t0 = epoch
-  val ω0 = pa
-  val Ω0 = raan
-  val M0 = meanAnomaly
-  
-  def revPerDay2RadPerMin(rpd: F) : F = 2 * pi * rpd / 1440 
-   
-  val radpm0 = revPerDay2RadPerMin(meanMotion)
-  // val n0 =  radpm0
-  // def xno = radpm0
+    // in days
+    val epoch = tle.epoch
+    val ω0 = pa
+    val Ω0 = raan
+    val M0 = meanAnomaly    
+    val radpm0 = revPerDay2RadPerMin(meanMotion)
+
+    TEME.SGPElements[F](radpm0,e0,i0,pa,raan,M0,bStar,refepoch)
+  }
+
+  def revPerDay2RadPerMin[F: Field: NRoot: Trig](rpd: F) : F = 2 * pi * rpd / 1440 
+
+  // FIXME: calculate the correct epoch date
 }
 
 }
-
 /* -----------------------------------------------------------------------------
 *
 *                           procedure days2mdhms

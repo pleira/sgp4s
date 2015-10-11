@@ -8,13 +8,9 @@ class TLE_Base extends FunSuite  with BeforeAndAfterAll {
   // for implicits
   object ddd extends spire.std.DoubleInstances
   
-//  final val tle : TLE = 
-//        TLE("1 00005U 58002B   00179.78495062  .00000023  00000-0  28098-4 0  4753",
-//            "2 00005  34.2682 348.7242 1859667 331.7664  19.3264 10.82419157413667"); 
-
-  val tles = TLE.parseFile("/SGP4-VER.TLE")
-  assert(tles.length > 0)
-  val rmap = tleResults("/results_all_wgs72.out")
+  lazy val tles = TLE.parseFile("/SGP4-VER.TLE")
+  // assert(tles.length > 0)
+  lazy val rmap = tleResults("/results_all_wgs72.out")
   
   def tleResults(path : String) = {
     val results = io.Source.fromInputStream(getClass.getResourceAsStream(path))
