@@ -2,7 +2,7 @@
  * See Dr. T.S. Kelso comments on TLE at 
  * http://www.celestrak.com/columns/v04n03/
  */
-package predict4s.tle {
+package predict4s.tle 
 
 // No double mumeric conversions done here, so double values are returned as Strings
 trait TLE {
@@ -30,16 +30,6 @@ trait TLE {
 }
 
 object TLE {
-  import java.util.regex.Pattern;
-  
-  val LINE_1_PATTERN : Pattern =
-      Pattern.compile("1 [ 0-9]{5}U [ 0-9]{5}[ A-Z]{3} [ 0-9]{5}[.][ 0-9]{8} [ +-][.][ 0-9]{8} " +
-                      "[ +-][ 0-9]{5}[+-][ 0-9] [ +-][ 0-9]{5}[+-][ 0-9] [ 0-9] [ 0-9]{4}[ 0-9]")
-
-  val LINE_2_PATTERN : Pattern =
-      Pattern.compile("2 [ 0-9]{5} [ 0-9]{3}[.][ 0-9]{4} [ 0-9]{3}[.][ 0-9]{4} [ 0-9]{7} " +
-                      "[ 0-9]{3}[.][ 0-9]{4} [ 0-9]{3}[.][ 0-9]{4} [ 0-9]{2}[.][ 0-9]{13}[ 0-9]")
-
 
   def apply(line1 : String, line2: String ) : TLE = new TLE {
     def lineNumber = parseInt(line1, 1, 1)
@@ -76,6 +66,47 @@ object TLE {
                 line1.substring(59, 61)).replace(' ', '0')                     
   }
   
+  def parseInt(line : String, start: Int, length: Int): Int = {
+    line.substring(start, start + length).replace(' ', '0').toInt
+  }
+  
+  def parse(line : String, start: Int, length: Int) : String = 
+    line.substring(start, start + length)
+  
+  
+  def parseYear(line : String, start: Int) : Int = {
+    val year = 2000 + parseInt(line, start, 2)
+    if (year > 2056) (year - 100) else year
+  }
+
+  def parseFile(path: String) : List[TLE] = {
+    val input = io.Source.fromInputStream(getClass.getResourceAsStream(path))
+    val iter = input.getLines()
+    var tmplist = List[TLE]() // scala.collection.mutable.LinkedList[TLE]();
+    while (iter.hasNext) {
+      val line1 = iter.next()
+      if (!line1.startsWith("#")) {
+        val line2 = iter.next()
+        if (!line2.startsWith("#")) {
+          tmplist = apply(line1, line2) :: tmplist
+        }
+      }
+    }
+    input.close()
+    val tles = tmplist.reverse
+    tles
+  }
+  
+  import java.util.regex.Pattern;
+  
+  val LINE_1_PATTERN : Pattern =
+      Pattern.compile("1 [ 0-9]{5}U [ 0-9]{5}[ A-Z]{3} [ 0-9]{5}[.][ 0-9]{8} [ +-][.][ 0-9]{8} " +
+                      "[ +-][ 0-9]{5}[+-][ 0-9] [ +-][ 0-9]{5}[+-][ 0-9] [ 0-9] [ 0-9]{4}[ 0-9]")
+
+  val LINE_2_PATTERN : Pattern =
+      Pattern.compile("2 [ 0-9]{5} [ 0-9]{3}[.][ 0-9]{4} [ 0-9]{3}[.][ 0-9]{4} [ 0-9]{7} " +
+                      "[ 0-9]{3}[.][ 0-9]{4} [ 0-9]{3}[.][ 0-9]{4} [ 0-9]{2}[.][ 0-9]{13}[ 0-9]")
+
   def isFormatOK(line1: String, line2: String) : Boolean = {
       if (!LINE_1_PATTERN.matcher(line1).matches() ||
           !LINE_2_PATTERN.matcher(line2).matches()) 
@@ -110,39 +141,7 @@ object TLE {
       sum % 10
   }
 
-  def parseInt(line : String, start: Int, length: Int): Int = {
-    line.substring(start, start + length).replace(' ', '0').toInt
-  }
-  
-  def parse(line : String, start: Int, length: Int) : String = 
-    line.substring(start, start + length)
-  
-  
-  def parseYear(line : String, start: Int) : Int = {
-    val year = 2000 + parseInt(line, start, 2)
-    if (year > 2056) (year - 100) else year
-  }
-
-
-  def parseFile(path: String) : List[TLE] = {
-    val input = io.Source.fromInputStream(getClass.getResourceAsStream(path))
-    val iter = input.getLines()
-    var tmplist = List[TLE]() // scala.collection.mutable.LinkedList[TLE]();
-    while (iter.hasNext) {
-      val line1 = iter.next()
-      if (!line1.startsWith("#")) {
-        val line2 = iter.next()
-        if (!line2.startsWith("#")) {
-          tmplist = TLE.apply(line1, line2) :: tmplist
-        }
-      }
-    }
-    input.close()
-    val tles = tmplist.reverse
-    tles
-  }
-
 }
 
 
-} // end package
+// } // end package

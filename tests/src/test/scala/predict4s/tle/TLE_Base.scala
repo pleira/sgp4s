@@ -3,7 +3,7 @@ package predict4s.tle
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.FunSuite
 
-class TLE_Base extends FunSuite  with BeforeAndAfterAll {
+class TLE_Base extends FunSuite  {
    
   // for implicits
   object ddd extends spire.std.DoubleInstances

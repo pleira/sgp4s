@@ -2,7 +2,7 @@ package predict4s.tle
 import spire.algebra.{Field,Trig,NRoot,Order,IsReal}
 import spire.math._
 import spire.implicits._
-
+/*
 class PosVelConv[F: Field: NRoot: Trig: IsReal](tlec : WGSConstants[F]) {
   import tlec._
   
@@ -109,3 +109,4 @@ class PosVelConv[F: Field: NRoot: Trig: IsReal](tlec : WGSConstants[F]) {
   }
   
 }
+*/

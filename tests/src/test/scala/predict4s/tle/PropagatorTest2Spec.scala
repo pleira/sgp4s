@@ -3,11 +3,17 @@ package predict4s.tle
 import org.scalautils.TolerantNumerics
 import collection.immutable.HashMap
 
+import spire.math._
+import spire.implicits.{eqOps => _, _}
+
+
 class PropagatorTest2Spec extends TLE_Base {
   
   // implicit
-  import ddd.DoubleAlgebra
+//  import ddd.DoubleAlgebra
   implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-8)
+  
+  implicit val wgs = WGS72Constants.tleDoubleConstants
   
   val resultsIni = HashMap (
    5 ->    (0.185966700,0.598092919,5.790416027,6.086385471,0.337309313,0.000028098,0.047229443),
@@ -91,8 +97,8 @@ nodedt    -0.000051677 xlcof     0.001836762 xmcof    -0.000133147 nodecf   -0.0
   test("structure all") ({
     assert(tles.size == 32 && rmap.size == 32)
     
-    def checkIni(ini: InitialTleValues[Double]) : Unit = {
-      val r = resultsIni.get(ini.tle.satelliteNumber).get
+    def checkIni(satelliteNumber : Int, ini: TEME.SGPElements[Double]) : Unit = {
+      val r = resultsIni.get(satelliteNumber).get
       import ini._
       assert(e0 === r._1)  //ecco
       assert(i0 === r._2)  //inclo
@@ -103,9 +109,16 @@ nodedt    -0.000051677 xlcof     0.001836762 xmcof    -0.000133147 nodecf   -0.0
  //     assert(radpm0 === r._7) ?
     }
     
-    def checkTimeIndepCoeficients(tIndep: SGP4TimeIndependentFunctions[Double]) : Unit = {
-      val r = resultsTimeIndep.get(tIndep.ini.tle.satelliteNumber).get
+    def checkTimeIndepCoeficients(satelliteNumber : Int, tIndep: SGP4TimeIndependentFunctions[Double]) : Unit = {
+      val r = resultsTimeIndep.get(satelliteNumber).get
       import tIndep._
+  //      import wgs._
+  import i0f._
+  import e0f._
+  import bmmf._
+  import sf._
+   import coeff._
+   
       assert(θ === r._1) // cosio
       assert(n0 === r._2) // n0 but after calculation of n0dp 
       assert(a0 === r._3) // a0 but after calculation of a0dp
@@ -120,23 +133,25 @@ nodedt    -0.000051677 xlcof     0.001836762 xmcof    -0.000133147 nodecf   -0.0
       assert(D4 === r._12)
     }
     
-    def checkTimeIndepSecularEffects(tIndep: SGP4TimeIndependentFunctions[Double]) : Unit = {
-      val r = resultsSecularEffects.get(tIndep.ini.tle.satelliteNumber).get
-      import tIndep._
+    def checkTimeIndepSecularEffects(satelliteNumber : Int, tIndep: SGP4TimeIndependentFunctions[Double]) : Unit = {
+      val r = resultsSecularEffects.get(satelliteNumber).get
+      import tIndep.ocf._
+      
       assert(ωdot === r._1)  //argpdot
       assert(Ωdot === r._2)  //nodedot
       assert(mdot === r._3)  //mdot
 
     }
-    
+
+
     var j = 0
     for (j <- 0 to 2) {
       val tle = tles(j)
-      val ini = InitialTleValues[Double](tle)
-      val tIndep = new SGP4TimeIndependentFunctions[Double](ini,WGS72Constants.tleDoubleConstants)
-      checkIni(ini)
-      checkTimeIndepCoeficients(tIndep)   
-      checkTimeIndepSecularEffects(tIndep)   
+      val ini = TEME.SGPElements[Double](tle)
+      val tIndep = SGP4TimeIndependentFunctions[Double](ini)
+      checkIni(tle.satelliteNumber, ini)
+      checkTimeIndepCoeficients(tle.satelliteNumber, tIndep)   
+      checkTimeIndepSecularEffects(tle.satelliteNumber, tIndep)   
     }
 
   })
@@ -153,19 +168,19 @@ nodedt    -0.000051677 xlcof     0.001836762 xmcof    -0.000133147 nodecf   -0.0
     
     val tle = tles(0)
     assert(tle.satelliteNumber == 5)
-    val state0 = new SGP4TimeIndependentFunctions[Double](InitialTleValues(tle), WGS72Constants.tleDoubleConstants)
+    val state0 = SGP4TimeIndependentFunctions[Double](TEME.SGPElements[Double](tle))
     // assert(state0.a0 === 1.353899821)
     // assert(state0.a0dp === )
     
 //    assert(state0.ini.epoch === 18441.784950620)
-    assert(state0.ini.ω0 === 5.790416027)  // argpo
-    assert(state0.ini.Ω0 === 6.086385471)  // node0
-    assert(state0.ini.M0 === 0.337309313)
+//    assert(state0.ini.ω0 === 5.790416027)  // argpo
+//    assert(state0.ini.Ω0 === 6.086385471)  // node0
+//    assert(state0.ini.M0 === 0.337309313)
     //assert(state0.ωdot === 0.0)  //2.886976017128261E8
     //assert(state0.Ωdot === 0.0)  //-6.10648416934914E7 
     
     // time independent outputs
-    assert(state0.θ === 0.826410932)
+//    assert(state0.θ === 0.826410932)
     
     // to check
 //    assert(state0.a1 === 1.3534574827552335) 

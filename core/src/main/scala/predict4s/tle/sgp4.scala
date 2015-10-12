@@ -15,7 +15,7 @@ import scala.{ specialized => spec }
  * perturbations due to J3, before a final conversion step to osculating elements by superimposition
  * of first-order, short-period perturbation amplitudes due to J2. 
  * (from Space Debris, by H. Klinkrad, pag 216).
- */ 
+ * 
 class SGP4[F : Field : NRoot : Order : Trig](ti: SGPElements[F], wgs : WGSConstants[F]) extends BaseSGP[F](ti, wgs)  {
 
   import ti._
@@ -96,3 +96,5 @@ class SGP4[F : Field : NRoot : Order : Trig](ti: SGPElements[F], wgs : WGSConsta
   }
 
 }
+
+*/
