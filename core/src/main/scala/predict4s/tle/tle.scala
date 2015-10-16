@@ -43,7 +43,7 @@ object TLE {
       def epochyear       = parseInt(line1, 18, 2)
       def year            = epochyear + (if (epochyear < 57)  2000 else 1900)
       
-      def epoch           = parse(line1, 20, 12)
+      def epoch           = parse(line1, 20, 12)  // days of the year
       // rev/day, 2 * rev/day^2 and 6 * rev/day^3 
       def meanMotion                 = parse(line2, 52, 11)
 //        drag                       = line1.parseDouble(33, 10),

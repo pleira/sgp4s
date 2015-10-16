@@ -3,6 +3,7 @@ package predict4s.tle
 import spire.algebra._
 import spire.math._
 import spire.implicits._
+import predict4s.tle.TEME.SGPElements
 
 
 /**
@@ -14,7 +15,7 @@ import spire.implicits._
  * (Reference http://aero.tamu.edu/sites/default/files/faculty/alfriend/S6.1%20Hoots.pdf)
  */
 case class SGP4TimeIndependentFunctions[F: Field: NRoot : Order: Trig] private (
-    val Ω0   : F, 
+    val ini  : TEME.SGPElements[F], 
     val i0f  : InclFunctions[F],
     val e0f  : EccentricityFunctions[F],
     val bmmf : BrowerMeanMotion[F],
@@ -24,7 +25,7 @@ case class SGP4TimeIndependentFunctions[F: Field: NRoot : Order: Trig] private (
     val ocf  : OtherCoefs[F]
     ) 
 
-case class OtherCoefs[F : Field: NRoot : Order: Trig](i0f : InclFunctions[F], e0f : EccentricityFunctions[F],
+case class OtherCoefs[F : Field: NRoot : Order: Trig](ini: TEME.SGPElements[F], i0f : InclFunctions[F], e0f : EccentricityFunctions[F],
       bmmf: BrowerMeanMotion[F], sf : ScalcFunctions[F], coeff : CoefFunctions[F])(implicit wgs : WGSConstants[F]) {
     
   import i0f._
@@ -33,6 +34,9 @@ case class OtherCoefs[F : Field: NRoot : Order: Trig](i0f : InclFunctions[F], e0
   import coeff._
   import sf._
   import wgs._
+  import ini.{epoch,M0}
+  
+  val gsto = gstime(epoch + 2433281.5) 
   
   // other derived coeficients and variables that can be used
   val Mcof  = if (e0 > 0.0001.as[F]) - 2*q0ms_ξ__to4 * bStar / e0η / 3 else 0.as[F]
@@ -136,14 +140,14 @@ case class EccentricityFunctions[F: Field: NRoot](val e0: F) {
     def rteosq     = β0sq
 }
 
-case class BrowerMeanMotion[F: Field: NRoot](M0: F, i0f : InclFunctions[F], e0f : EccentricityFunctions[F])(implicit wgs : WGSConstants[F])  {
+case class BrowerMeanMotion[F: Field: Order: NRoot](n0k: F, i0f : InclFunctions[F], e0f : EccentricityFunctions[F])(implicit wgs : WGSConstants[F])  {
   import wgs._
   import i0f._
   import e0f._
   
     // recovery of the Brouwer mean motion from the Kozai mean motion
   // Hoots a1
-  val a1  = (KE / M0) fpow (2.0/3.0).as[F] // KE here contains Earth radius to 3/2
+  val a1  = (KE / n0k) fpow (2.0/3.0).as[F] // KE here contains Earth radius to 3/2
   // val a1 = aE * (MU/radpm0) fpow (TWO_THIRD)   // but in Hoots, KE is just sqrt(G*Mass_earth) * (E_radius/60) fpow (3/2)
   
   // 3 theta2 minus 1
@@ -156,15 +160,18 @@ case class BrowerMeanMotion[F: Field: NRoot](M0: F, i0f : InclFunctions[F], e0f 
   val δ1   = tval/(a1 * a1) 
   val a2   = a1 * (1 - δ1 * (1.0/3.0 + δ1 * (1 + 134 * δ1 / 81)))    //def a0 = a2
   val δ0   = tval/(a2 * a2)  
-  val n0dp = M0 /(1 + δ0) 
+  val n0dp = n0k /(1 + δ0) 
+
+  // mean semimajor axis 
   val a0dp = (KE / n0dp) fpow (2.0/3.0).as[F]
  
-  
   val a0    = a0dp
   val a0sq  = a0*a0
   lazy val a0to4 = a0sq*a0sq
   val n0    = n0dp
-
+  
+  // use deep space
+  def isDeepSpace = (2*pi / n0) >= 225.as[F]
 }
 
 case class ScalcFunctions[F: Field: NRoot: Order: Trig](e0f : EccentricityFunctions[F], bmmf: BrowerMeanMotion[F])
@@ -183,9 +190,10 @@ case class ScalcFunctions[F: Field: NRoot: Order: Trig](e0f : EccentricityFuncti
   // perigee height, altitude relative to the earth's surface, so perige instead of perigee 
   val perige = (rp - 1)*aE  
   
-  // The parameter q0 is a constant equal to 120 km plus one Earth radius 
+  // The parameter q0 is the geocentric reference altitude, 
+  // a constant equal to 120 km plus one Earth radius 
   val q0   = 1 + 120/aE 
-  val s    = calculateS
+  val s    = fittingAtmosphericParameter
   val q0ms_to4 = (q0 - s)**4 
     
   val ξ    = 1/(a0 - s)  // tsi
@@ -197,7 +205,7 @@ case class ScalcFunctions[F: Field: NRoot: Order: Trig](e0f : EccentricityFuncti
   val η    = a0*e0*ξ   // eta
   val ηsq  = η*η       // etasq
   lazy val ηto3 = ηsq*η
-  val ηto4 = ηsq*ηsq
+  val ηto4  = ηsq*ηsq
   val e0η   = e0*η      // eeta 
   val psisq = abs[F](1-ηsq)  // Vallado's uses fabs
   // q0 minus s ξ  all to 4 
@@ -210,13 +218,14 @@ case class ScalcFunctions[F: Field: NRoot: Order: Trig](e0f : EccentricityFuncti
   def S_between_98_156 =  (1 + hs/aE)
   def S_below98        =  (1 + 20/aE)
 
-  /* the parameter s is determined based of epoch perigee
+  /* the parameter s is a fitting parameter in density representation.
+   * It is determined based of epoch perigee
    * height above a spherical Earth. If perigee height is greater than or equal 156 km, the value of s is
    * fixed to be 78 km plus one Earth radius. For altitudes greater than or equal to 98 km but less
    * than 156 km, s is defined to be perigee height minus 78 km plus one Earth radius. 
    * For altitudes below 98 km, s is 20 km plus one Earth radius.
    */
-  private def calculateS : F = 
+  private def fittingAtmosphericParameter : F = 
      if (perige >= 156)       S_above156
      else if (perige >= 98)   S_between_98_156
      else                     S_below98  
@@ -247,7 +256,7 @@ case class CoefFunctions[F: Field: NRoot: Order: Trig](ω0: F, bStar: F, i0f : I
 //        3*K2*ξ/(2*(1-ηsq)) * (3*θsq - 1)/2 * (8 + 24*ηsq + 3*ηto4)) 
   
   val C1 : F = bStar * C2
-  val C1sq  = C1*C1
+  val C1sq   = C1*C1
   
   // Vallado's 
    // cc3 = -2.0 * coef * tsi * j3oj2 * satrec.no * sinio / satrec.ecco;
@@ -296,12 +305,12 @@ object SGP4TimeIndependentFunctions {
     import ini._
     val i0f  = InclFunctions(i0)
     val e0f  = EccentricityFunctions(e0)
-    val bmmf = BrowerMeanMotion(M0,i0f,e0f)
+    val bmmf = BrowerMeanMotion(n0,i0f,e0f)
     val sf   = ScalcFunctions(e0f,bmmf)
     val coeff = CoefFunctions(ω0, bStar,i0f,e0f,bmmf, sf)
     val ilf  = ILCoefs(coeff) 
-    val ocf  = OtherCoefs(i0f,e0f,bmmf,sf,coeff) 
+    val ocf  = OtherCoefs(ini, i0f,e0f,bmmf,sf,coeff) 
    
-  new SGP4TimeIndependentFunctions(Ω0,i0f,e0f,bmmf,sf,coeff,ilf,ocf)
+  new SGP4TimeIndependentFunctions(ini,i0f,e0f,bmmf,sf,coeff,ilf,ocf)
   }
 }
