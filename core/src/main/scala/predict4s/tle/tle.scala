@@ -14,6 +14,7 @@ trait TLE {
   def launchPiece: String
   def ephemerisType: Int
   def elementNumber: Int
+  def epochyear: Int
   def year: Int
   // day of the year and fractional portion of the day)
   def epoch: String
