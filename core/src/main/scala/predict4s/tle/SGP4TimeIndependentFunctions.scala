@@ -43,8 +43,8 @@ case class OtherCoefs[F : Field: NRoot : Order: Trig](ini: TEME.SGPElements[F], 
   def xmcof  = Mcof
   val ωcof   = bStar*C3*cos(ω0)
   val pinvsq = 1 / posq
-  val temp1  = 3 * J2 / posq * n0dp / 2
-  val temp2  = temp1 * J2 / posq / 2
+  val temp1  = 3 * J2 * pinvsq * n0 / 2
+  val temp2  = temp1 * J2 * pinvsq / 2
   val temp3  = -0.46875 * J4 * pinvsq * pinvsq * n0
   val xhdot1 = -temp1 * θ
   val Ωcof   = 7 * β0sq * xhdot1 * C1 / 2
@@ -53,13 +53,13 @@ case class OtherCoefs[F : Field: NRoot : Order: Trig](ini: TEME.SGPElements[F], 
   // sgp4fix for divide by zero with inco = 180 deg, // FIXME: not valid for deep space
   val xlcof =  if (abs(θ+1) > 1.5e-12.as[F]) - J3/J2 * sinio * (3 + 5*θ) / (1 + θ) / 4
                else                          - J3/J2 * sinio * (3 + 5*θ) / 1.5e-12 / 4
-   val aycof   = - J3/J2 * sinio / 2  // FIXME: not valid for deep space
-   val sinM0  = sin(M0)
-   def sinmao  = sinM0
-   val x7thm1  = 7*θsq - 1
+  val aycof   = - J3/J2 * sinio / 2  // FIXME: not valid for deep space
+  val sinM0  = sin(M0)
+  def sinmao  = sinM0
+  val x7thm1  = 7*θsq - 1
    
  
-   val twopi : F = 2.as[F]*pi
+  val twopi : F = 2.as[F]*pi
   
   def originalMeanMotionAndSemimajorAxis() = (n0dp, a0dp)
    
@@ -93,7 +93,7 @@ case class OtherCoefs[F : Field: NRoot : Order: Trig](ini: TEME.SGPElements[F], 
 //          + 5*K4*θ*(3-7*θsq)/(2*a0to4*β0to4*β0to4))
   val (_Mdot, ωdot, omegadot) : (F,F,F) = if (n0 >= 0.as[F] || β0sq >= 0.as[F])
       ( 
-          n0dp + 0.5 * temp1 * β0 * con41 + 0.0625 * temp2 * β0 * (13 - 78 * θsq + 137 * θsq*θsq),
+          n0 + 0.5 * temp1 * β0 * con41 + 0.0625 * temp2 * β0 * (13 - 78 * θsq + 137 * θsq*θsq),
         //  n0dp + temp1 * β0sq * con41 / 2 + 0.0625 * temp2 * β0sq * (13 - 78*θsq + 137*θto4) / 16, 
       //val Ṁ = n0*3*K2*((-1+3*θsq)/(2*a0sq*β0to3) + K2*(13-78*θsq + 137*θto4)/(16*a0to4*β0to4*β0to3)) 
       
@@ -173,6 +173,11 @@ case class BrowerMeanMotion[F: Field: Order: NRoot](n0k: F, i0f : InclFunctions[
   
   // use deep space
   def isDeepSpace = (2*pi / n0) >= 225
+  
+  // radius of perigee (note no aE term present in Vallado's)
+  val rp      = a0*(1-e0) 
+  
+  def isImpacting : Boolean = rp < (220/aE + 1)
 }
 
 case class ScalcFunctions[F: Field: NRoot: Order: Trig](e0f : EccentricityFunctions[F], bmmf: BrowerMeanMotion[F])
@@ -185,8 +190,6 @@ case class ScalcFunctions[F: Field: NRoot: Order: Trig](e0f : EccentricityFuncti
   val po    = a0*β0sq
   val posq  = po*po
 
-  // radius of perigee (note no aE term present in Vallado's)
-  val rp      = a0*(1-e0) 
   
   // perigee height, altitude relative to the earth's surface, so perige instead of perigee 
   val perige = (rp - 1)*aE  
@@ -230,8 +233,6 @@ case class ScalcFunctions[F: Field: NRoot: Order: Trig](e0f : EccentricityFuncti
      if (perige >= 156)       S_above156
      else if (perige >= 98)   S_between_98_156
      else                     S_below98  
-     
-   //def isImpacting : Boolean = rp < (220/aE + 1)
   
 }
 
