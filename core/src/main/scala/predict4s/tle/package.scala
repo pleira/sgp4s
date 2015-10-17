@@ -28,7 +28,7 @@ package object tle {
         Ω0 : F, // right ascension ascending node
         M0 : F, // mean anomaly
         bStar : F, // atmospheric Drag Coeficient
-        epoch : Double) // epoch time in days from jan 0, 1950. 0 hr
+        epoch : F) // epoch time in days from jan 0, 1950. 0 hr
   
     
     object SGPElements {
@@ -44,9 +44,9 @@ package object tle {
         val bStar = tle.atmosphericDragCoeficient.toDouble.as[F]
       
         // in julian days
-        val epoch = {
+        val epoch : F = {
           val mdhms = days2mdhms(tle.year, tle.epoch.toDouble)
-          jday(tle.year, mdhms._1, mdhms._2, mdhms._3, mdhms._4, mdhms._5) -2433281.5
+          (jday(tle.year, mdhms._1, mdhms._2, mdhms._3, mdhms._4, mdhms._5) - 2433281.5).as[F]
         }
         val ω0 = pa
         val Ω0 = raan
@@ -104,17 +104,17 @@ package object tle {
 *    vallado       2004, 191, eq 3-45
 * --------------------------------------------------------------------------- */
 
-def  gstime(jdut1: Double) : Double = {
-     val twopi = 2 * pi
+def  gstime[F : Field: NRoot : Order: Trig](jdut1: F) : F = {
+     val twopi = (2 * pi).as[F]
      val deg2rad = pi / 180
 
      val tut1 = (jdut1 - 2451545) / 36525
      var temp = -6.2e-6* tut1 * tut1 * tut1 + 0.093104 * tut1 * tut1 +
              (876600.0*3600 + 8640184.812866) * tut1 + 67310.54841  // sec
-     temp = EuclideanRing[Double].mod(temp * deg2rad / 240.0, twopi) //360/86400 = 1/240, to deg, to rad
+     temp = EuclideanRing[F].mod(temp * deg2rad / 240, twopi) //360/86400 = 1/240, to deg, to rad
 
      // ------------------------ check quadrants ---------------------
-     if (temp < 0.0)  temp += twopi
+     if (temp < 0.as[F])  temp += twopi
 
      temp
    }  // end gstime

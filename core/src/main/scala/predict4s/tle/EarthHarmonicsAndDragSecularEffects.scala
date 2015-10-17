@@ -15,7 +15,7 @@ trait EarthHarmonicsAndDragSecularEffects {
   /** t is the duration in minutes from the epoch , then the SGP4 Time Independent Functions */
   def propagate[F: Field: NRoot : Order: Trig](t: F)(tind: SGP4TimeIndependentFunctions[F])
   (implicit wgs : WGSConstants[F])
-         : (SGP4TimeIndependentFunctions[F], TEME.SGPElements[F]) = {
+         : (SGP4TimeIndependentFunctions[F], TEME.SGPElements[F], F) = {
     import tind._
     import tind.i0f._
     import tind.e0f._
@@ -27,8 +27,7 @@ trait EarthHarmonicsAndDragSecularEffects {
     import tind.ini.{M0,Ω0}
     import wgs.KE
     
-    // fixme: it needs to be provided
-    val refepoch = tind.ini.epoch
+    val refepoch = tind.ini.epoch + t
     
     val ωdf : F = ω0 + ωdot*t
     val Ωdf : F = Ω0 + Ωdot*t
@@ -88,7 +87,7 @@ trait EarthHarmonicsAndDragSecularEffects {
        {
          // sgp4fix to return if there is an error in eccentricity
          // return false;
-        return (tind, TEME.SGPElements[F](am, emt, i0, ωm, Ωm, _Mp, bStar, refepoch))  
+        return (tind, TEME.SGPElements[F](am, emt, i0, ωm, Ωm, _Mp, bStar, refepoch), am)  
        }
 
      // sgp4fix fix tolerance to avoid a divide by zero
@@ -106,7 +105,9 @@ trait EarthHarmonicsAndDragSecularEffects {
      val Mm      = (lm - ω - Ω) % twopi
      
      // Better SGPElements (radpm0,e0,i0,pa,raan,M0,bStar,refepoch)
-    (tind, TEME.SGPElements[F](nm, em, i0, ω, Ω, Mm,bStar,refepoch))  
+    (tind, TEME.SGPElements[F](nm, em, i0, ω, Ω, Mm,bStar, refepoch), am)  
+    // Return a different structure here for the long periodic effects
+    
   }
    
 }

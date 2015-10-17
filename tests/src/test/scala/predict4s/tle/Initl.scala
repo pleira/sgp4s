@@ -24,9 +24,9 @@ def inclo  : Double     ; def      mo  : Double   ;
 // in and out variables 
 def    no  : Double     ; 
 //    outputs  :
-def   isimp  : Int      ; def  method  : Char     ; def   aycof  : Double     ; 
+def   isimp  : Int      ; def  method  : Char       ; def   aycof  : Double    ; 
 def con41  : Double     ; def    cc1   : Double     ; def     cc4  : Double    ; 
-def   cc5  : Double     ; def      d2  : Double     ; def      d3  : Double     ; def      d4  : Double     ; def   delmo  : Double; 
+def   cc5  : Double     ; def      d2  : Double     ; def      d3  : Double    ; def      d4  : Double     ; def   delmo  : Double; 
 def   eta  : Double     ; def  argpdot : Double     ; def   omgcof : Double; 
 def sinmao : Double     ; def   t2cof  : Double     ; def   t3cof  : Double    ; 
 def t4cof  : Double     ; def   t5cof  : Double     ; def    gsto  : Double    ; def  x1mth2  : Double ; def  x7thm1  : Double ; def   xlcof  : Double ; 
@@ -92,11 +92,9 @@ object Sgp4Vars {
       def   bstar  : Double = tif.ini.bStar
       def   argpo  : Double = tif.ini.ω0
       def      mo  : Double = tif.ini.M0
-      def   isimp  : Int    = if ((omeosq >= 0.0) || (no >= 0.0)) { 
-        var isimp : Int = if (tif.bmmf.isImpacting) 1 else 0
-        isimp = if (isDeepSpace) 1 else 0 
-        isimp
-      } else 0
+      def   isimp  : Int    = if ((omeosq >= 0.0) || (no >= 0.0))
+                                    if (isImpacting || isDeepSpace) 1 else 0
+                              else 0
       def   aycof  : Double = tif.ocf.aycof // FIXME for d
       def    cc1   : Double =  C1   
       def     cc4  : Double =  C4 
