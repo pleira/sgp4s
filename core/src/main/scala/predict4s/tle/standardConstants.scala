@@ -10,7 +10,7 @@ trait WGSConstants[F] {
   
   /** Equatorial radius of the Earth in km */ 
   def aE: F
-  def EARTH_RADIUS = aE
+  // def EARTH_RADIUS = aE
   
   /**  sqrt (Grativational Constant * Earths's Mass)  in units (Earths Radii)** 1.5 / minute */
   def KE: F
@@ -23,7 +23,7 @@ trait WGSConstants[F] {
   def J3: F
   /** J3 spherical harmonic value */
   def J4: F  
-
+  def vkmpersec: F  
   def CK2: F = K2 // = 5.413080E-4.as[F] // 1/2 J2aE
   def CK4: F = K4  // = -3*J4* aE * aE * aE * aE / 8
   def K2: F 
@@ -48,7 +48,8 @@ class WGS721Constants[F: Field]() extends WGS[F] {
   val KE     =   0.0743669161.as[F] 
   val J2     =   0.001082616.as[F]
   val J3     =  -0.00000253881.as[F]
-  val J4     =  -0.00000165597.as[F]  
+  val J4     =  -0.00000165597.as[F]
+  val vkmpersec =  aE * KE/60
   override val K2     =   super.K2
   override val K4     =   super.K4
 }
@@ -59,7 +60,8 @@ class WGS72Constants[F: Field]() extends WGS[F] {
   val KE     =   0.07436691613317.as[F]       //   60 / (aE* aE * aE/ MU).sqrt  // /min
   val J2     =   0.001082616.as[F]
   val J3     =  -0.00000253881.as[F]
-  val J4     =  -0.00000165597.as[F]  
+  val J4     =  -0.00000165597.as[F]
+  val vkmpersec =  aE * KE/60
   override val K2     =   super.K2
   override val K4     =   super.K4
 }
@@ -71,6 +73,7 @@ class WGS84Constants[F: Field]() extends WGS[F] {
   val J2     =   0.00108262998905.as[F]
   val J3     =  -0.00000253215306.as[F]
   val J4     =  -0.00000161098761.as[F]
+  val vkmpersec =  aE * KE/60
   override val K2     =   super.K2
   override val K4     =   super.K4
 }

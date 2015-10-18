@@ -102,10 +102,10 @@ class PVConverter[F: Field: NRoot: Trig: IsReal](tlec : WGSConstants[F]) {
     val xn = KE / (a * sqrt(a))
     val rdotk = rdot - xn * temp1 * x1mth2 * sin2u
     val rfdotk = rfdot + xn * temp1 * (x1mth2 * cos2u + 3 * x3thm1 / 2)
-    val pos = (EARTH_RADIUS * rk) *: Vector(ux, uy, uz)
+    val pos = (aE * rk) *: Vector(ux, uy, uz)
     val v_u = rdotk *: Vector(ux, uy, uz)
     val v_v = rfdotk *: Vector(xmx * cosuk - cosnok * sinuk, xmy * cosuk - sinnok * sinuk,  sinik * cosuk)
-    val vel = (EARTH_RADIUS / 60) *: (v_v + v_u) 
+    val vel = (aE / 60) *: (v_v + v_u) 
     TEME.PosVel(pos, vel)
   }
   
