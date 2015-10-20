@@ -55,8 +55,8 @@ trait ShortPeriodPeriodicPerturbations {
 //           }
      val    mrt   = rl * (1 - 1.5 * temp2 * betal * con41) +
                  0.5 * temp1 * x1mth2 * cos2u
-            su    = su - 0.25 * temp2 * x7thm1 * sin2u
-     val    xnode = nodep + 1.5 * temp2 * cosip * sin2u
+            su    = su - 0.25 * temp2 * x7thm1 * sin2u;
+     val    xnode = nodep + 1.5 * temp2 * cosip * sin2u;
      val    xinc  = xincp + 1.5 * temp2 * cosip * sinip * cos2u
      val    mvt   = rdotl - nm * temp1 * x1mth2 * sin2u / KE
      val    rvdot = rvdotl + nm * temp1 * (x1mth2 * cos2u + 1.5 * con41) / KE
@@ -102,4 +102,5 @@ trait ShortPeriodPeriodicPerturbations {
 
 }
 
+object ShortPeriodPeriodicPerturbations extends ShortPeriodPeriodicPerturbations
 

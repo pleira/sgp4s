@@ -15,12 +15,12 @@ class IntlCheckclass extends FunSuite  {
   lazy val tles = TLE.parseFile("/SGP4-VER.TLE")
 
   implicit val wgs = WGS72Constants.tleDoubleConstants
+  implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-4)
 
   def f(tle: TLE) : TEME.SGPElements[Double] = TEME.SGPElements(tle)
   
   def g(el: TEME.SGPElements[Double]) : SGP4TimeIndependentFunctions[Double] = SGP4TimeIndependentFunctions(el)
   
-  implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-8)
   
     test("structure all") ({
     assert(tles.size == 32)
@@ -28,10 +28,14 @@ class IntlCheckclass extends FunSuite  {
     
     // val tifs : List[SGP4TimeIndependentFunctions[Double]] = tles.map(f).map(g)
      
-    val inis : List[Sgp4Vars] = tles.map(Sgp4Vars(_))
+    val inis0 : List[Sgp4Result] = tles.map(tle => Sgp4Result(tle, 0.0))
+    val inis360 : List[Sgp4Result] = tles.map(tle => Sgp4Result(tle, 360.0))
     
-    val it = inis.iterator
+    val it = inis0.iterator
  val s5 = it.next
+ val it360 = inis360.iterator
+ val s5_360 = it360.next
+  
  val s4632 = it.next
  val s6251 = it.next
  val s8195 = it.next
@@ -60,38 +64,46 @@ class IntlCheckclass extends FunSuite  {
  val s29141 = it.next
  val s29238 = it.next
  val s88888 = it.next
- 
-checkIntl5(s5)
-checkIntl4632(s4632)
+// 
+//checkIntl5(s5)
+//checkIntl4632(s4632)
 checkIntl6251(s6251)
-checkIntl8195(s8195)
-checkIntl9880(s9880)
-checkIntl9998(s9998)
-checkIntl11801(s11801)
-checkIntl14128(s14128)
-checkIntl16925(s16925)
-checkIntl20413(s20413)
-checkIntl21897(s21897)
-checkIntl22312(s22312)
-checkIntl22674(s22674)
-checkIntl23177(s23177)
-checkIntl23333(s23333)
-checkIntl23599(s23599)
-checkIntl24208(s24208)
-checkIntl25954(s25954)
-checkIntl26900(s26900)
-checkIntl26975(s26975)
+//checkIntl8195(s8195)
+//checkIntl9880(s9880)
+//checkIntl9998(s9998)
+//checkIntl11801(s11801)
+//checkIntl14128(s14128)
+//checkIntl16925(s16925)
+//checkIntl20413(s20413)
+//checkIntl21897(s21897)
+//checkIntl22312(s22312)
+//checkIntl22674(s22674)
+//checkIntl23177(s23177)
+//checkIntl23333(s23333)
+//checkIntl23599(s23599)
+//checkIntl24208(s24208)
+//checkIntl25954(s25954)
+//checkIntl26900(s26900)
+//checkIntl26975(s26975)
 checkIntl28057(s28057)
-checkIntl28129(s28129)
-checkIntl28350(s28350)
-checkIntl28623(s28623)
-checkIntl28626(s28626)
-checkIntl28872(s28872)
-checkIntl29141(s29141)
-checkIntl29238(s29238)
-checkIntl88888(s88888)
+//checkIntl28129(s28129)
+//checkIntl28350(s28350)
+//checkIntl28623(s28623)
+//checkIntl28626(s28626)
+//checkIntl28872(s28872)
+//checkIntl29141(s29141)
+//checkIntl29238(s29238)
+//checkIntl88888(s88888)
 
-checkSgp4Init5(s5)
+ 
+checkSgp4_5_0(s5)
+
+ //doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-8)
+    
+checkSgp4_5_360(s5_360)
+//checkSgp4_5_0(s5)
+
+//checkSgp4Init5(s5)
 //checkSgp4Init4632(s4632)
 checkSgp4Init6251(s6251)
 //checkSgp4Init8195(s8195)
@@ -120,10 +132,19 @@ checkSgp4Init28057(s28057)
 //checkSgp4Init29141(s29141)
 //checkSgp4Init29238(s29238)
 //checkSgp4Init88888(s88888)
+
+//checkSgp4_6251_0(s6251)
+//checkSgp4_28057_0(s28057)
+//checkSgp4_6251_360(s6251)
+//checkSgp4_28057_360(s28057)
+
+//assert(      s5.x  ===  7022.465292664 ); assert(      s5.y  === -1400.082967554 ); assert(      s5.z  ===     0.039951554 ); assert(   s5.xdot  ===     1.893841015 ); assert(   s5.ydot  ===     6.405893759 ); assert(   s5.zdot  ===     4.534807250 ); 
+
+
   })
   
                                    // ------------------after initl  :---------------
-def checkIntl5(ini : Initl) {
+def checkIntl5(ini : Initl) = {
  import ini._
   assert(   satn  ===               5 );  assert(   ecco  ===     0.185966700 );  assert(  epoch  === 18441.784950620 );  assert(  inclo  ===     0.598092919 ); 
  //   in/out : 
@@ -161,6 +182,76 @@ assert(      t  ===     0.000000000); assert(  nodeo  ===     6.086385471 );
 //            xfact     0.000000000); assert(   xgh2  ===     0.000000000); assert(   xgh3  ===     0.000000000); assert(   xgh4  ===     0.000000000); assert(    xh2  ===     0.000000000 ); 
 //              xh3     0.000000000); assert(    xi2  ===     0.000000000); assert(    xi3  ===     0.000000000); assert(    xl2  ===     0.000000000); assert(    xl3  ===     0.000000000 ); 
 //              xl4     0.000000000); assert(    xli  ===     0.000000000); assert(  xlamo  ===     0.000000000); assert(    xni  ===     0.000000000); assert(   zmol  ===     0.000000000); assert(   zmos  ===     0.000000000 ); 
+} 
+//                                     ------------------after sgp4   :---------------
+def checkSgp4_5_0(res: Sgp4Result) = {
+ import res._
+ //   inputs : 
+ assert(  isimp  ===               0 ); assert( method  ===             110 ); assert(  aycof  ===     0.000660216 ); assert(  bstar  ===     0.000028098 ); assert(  con41  ===     1.048865088 ); assert(    cc1  ===     0.000000000 ); 
+ assert(    cc4  ===     0.000000526 ); assert(    cc5  ===     0.000016465 ); assert(     d2  ===     0.000000000 ); assert(     d3  ===     0.000000000 ); assert(     d4  ===     0.000000000 ); assert(  delmo  ===     4.873084659 ); 
+ assert(   ecco  ===     0.185966700 ); assert(    eta  ===     0.736909543 ); assert(  argpo  ===     5.790416027 ); assert( argpdot ===     0.000054293 ); assert(  omgcof ===     0.000000000 ); assert(  sinmao ===     0.330949230 ); 
+ assert(      t  ===     0.000000000 ); assert(  t2cof  ===     0.000000000 ); assert(  t3cof  ===     0.000000000 ); assert(  t4cof  ===     0.000000000 ); assert(  t5cof  ===     0.000000000 ); assert(  x1mth2 ===     0.317044971 ); 
+ assert(  x7thm1 ===     3.780685205 ); assert(  inclo  ===     0.598092919 ); assert(     mo  ===     0.337309313 ); assert(   mdot  ===     0.047229443 ); assert(    xno  ===     0.047206302 ); assert(  nodeo  ===     6.086385471 ); 
+ assert( nodedt  ===    -0.000037171 ); assert(  xlcof  ===     0.001289058 ); assert(  xmcof  ===    -0.000000000 ); assert(  nodecf ===    -0.000000000 ); 
+//    outputs : 
+assert(  error  ===               0 ); assert(      x  ===  7022.465292664 ); assert(      y  === -1400.082967554 ); assert(      z  ===     0.039951554 ); assert(   xdot  ===     1.893841015 ); assert(   ydot  ===     6.405893759 ); assert(   zdot  ===     4.534807250 ); 
+//    extra inputs for ds : 
+// assert(   irez  ===               0 ); assert(  d2201  ===     0.000000000 ); assert(  d2211  ===     0.000000000 ); assert(  d3210  ===     0.000000000 ); assert(  d3222  ===     0.000000000 ); 
+// assert(  d4410  ===     0.000000000 ); assert(  d4422  ===     0.000000000 ); assert(  d5220  ===     0.000000000 ); assert(  d5232  ===     0.000000000 ); assert(  d5421  ===     0.000000000 ); assert(  d5433  ===     0.000000000 ); 
+// assert(   dedt  ===     0.000000000 ); assert(   del1  ===     0.000000000 ); assert(   del2  ===     0.000000000 ); assert(   del3  ===     0.000000000 ); assert(   didt  ===     0.000000000 ); assert(   dmdt  ===     0.000000000 ); 
+// assert(  dnodt  ===     0.000000000 ); assert(  domdt  ===     0.000000000 ); assert(     e3  ===     0.000000000 ); assert(    ee2  ===     0.000000000 ); assert(    peo  ===     0.000000000 ); assert(   pgho  ===     0.000000000 ); 
+// assert(    pho  ===     0.000000000 ); assert(  pinco  ===     0.000000000 ); assert(    plo  ===     0.000000000 ); assert(    se2  ===     0.000000000 ); assert(    se3  ===     0.000000000 ); assert(   sgh2  ===     0.000000000 ); 
+// assert(   sgh3  ===     0.000000000 ); assert(   sgh4  ===     0.000000000 ); assert(    sh2  ===     0.000000000 ); assert(    sh3  ===     0.000000000 ); assert(    si2  ===     0.000000000 ); assert(    si3  ===     0.000000000 ); 
+// assert(    sl2  ===     0.000000000 ); assert(    sl3  ===     0.000000000 ); assert(    sl4  ===     0.000000000 ); assert(   gsto  ===     3.469172342 ); assert(  xfact  ===     0.000000000 ); assert(   xgh2  ===     0.000000000 ); 
+// assert(   xgh3  ===     0.000000000 ); assert(   xgh4  ===     0.000000000 ); assert(    xh2  ===     0.000000000 ); assert(    xh3  ===     0.000000000 ); assert(    xi2  ===     0.000000000 ); assert(    xi3  ===     0.000000000 ); 
+// assert(    xl2  ===     0.000000000 ); assert(    xl3  ===     0.000000000 ); assert(    xl4  ===     0.000000000 ); assert(  xlamo  ===     0.000000000 ); assert(   zmol  ===     0.000000000 ); assert(   zmos  ===     0.000000000 ); 
+// assert(  atime  ===     0.000000000 ); assert(    xli  ===     0.000000000 ); assert(    xni  ===     0.000000000 ); 
+} 
+def checkSgp4_5_360(res: Sgp4Result) = {
+ import res._
+ //   inputs : 
+ assert(  isimp  ===               0 ); assert( method  ===             110 ); assert(  aycof  ===     0.000660216 ); assert(  bstar  ===     0.000028098 ); assert(  con41  ===     1.048865088 ); assert(    cc1  ===     0.000000000 ); 
+ assert(    cc4  ===     0.000000526 ); assert(    cc5  ===     0.000016465 ); assert(     d2  ===     0.000000000 ); assert(     d3  ===     0.000000000 ); assert(     d4  ===     0.000000000 ); assert(  delmo  ===     4.873084659 ); 
+ assert(   ecco  ===     0.185966700 ); assert(    eta  ===     0.736909543 ); assert(  argpo  ===     5.790416027 ); assert( argpdot ===     0.000054293 ); assert(  omgcof ===     0.000000000 ); assert(  sinmao ===     0.330949230 ); 
+ assert(      t  ===   360.000000000 ); assert(  t2cof  ===     0.000000000 ); assert(  t3cof  ===     0.000000000 ); assert(  t4cof  ===     0.000000000 ); assert(  t5cof  ===     0.000000000 ); assert(  x1mth2 ===     0.317044971 ); 
+ assert(  x7thm1 ===     3.780685205 ); assert(  inclo  ===     0.598092919 ); assert(     mo  ===     0.337309313 ); assert(   mdot  ===     0.047229443 ); assert(    xno  ===     0.047206302 ); assert(  nodeo  ===     6.086385471 ); 
+ assert( nodedt  ===    -0.000037171 ); assert(  xlcof  ===     0.001289058 ); assert(  xmcof  ===    -0.000000000 ); assert(  nodecf ===    -0.000000000 ); 
+//    outputs : 
+assert(  error  ===               0 ); assert(      x  === -7154.031202016 ); assert(      y  === -3783.176825037 ); assert(      z  === -3536.194122942 ); assert(   xdot  ===     4.741887409 ); assert(   ydot  ===    -4.151817765 ); assert(   zdot  ===    -2.093935425 ); 
+//    extra inputs for ds : 
+// assert(   irez  ===               0 ); assert(  d2201  ===     0.000000000 ); assert(  d2211  ===     0.000000000 ); assert(  d3210  ===     0.000000000 ); assert(  d3222  ===     0.000000000 ); 
+// assert(  d4410  ===     0.000000000 ); assert(  d4422  ===     0.000000000 ); assert(  d5220  ===     0.000000000 ); assert(  d5232  ===     0.000000000 ); assert(  d5421  ===     0.000000000 ); assert(  d5433  ===     0.000000000 ); 
+// assert(   dedt  ===     0.000000000 ); assert(   del1  ===     0.000000000 ); assert(   del2  ===     0.000000000 ); assert(   del3  ===     0.000000000 ); assert(   didt  ===     0.000000000 ); assert(   dmdt  ===     0.000000000 ); 
+// assert(  dnodt  ===     0.000000000 ); assert(  domdt  ===     0.000000000 ); assert(     e3  ===     0.000000000 ); assert(    ee2  ===     0.000000000 ); assert(    peo  ===     0.000000000 ); assert(   pgho  ===     0.000000000 ); 
+// assert(    pho  ===     0.000000000 ); assert(  pinco  ===     0.000000000 ); assert(    plo  ===     0.000000000 ); assert(    se2  ===     0.000000000 ); assert(    se3  ===     0.000000000 ); assert(   sgh2  ===     0.000000000 ); 
+// assert(   sgh3  ===     0.000000000 ); assert(   sgh4  ===     0.000000000 ); assert(    sh2  ===     0.000000000 ); assert(    sh3  ===     0.000000000 ); assert(    si2  ===     0.000000000 ); assert(    si3  ===     0.000000000 ); 
+// assert(    sl2  ===     0.000000000 ); assert(    sl3  ===     0.000000000 ); assert(    sl4  ===     0.000000000 ); assert(   gsto  ===     3.469172342 ); assert(  xfact  ===     0.000000000 ); assert(   xgh2  ===     0.000000000 ); 
+// assert(   xgh3  ===     0.000000000 ); assert(   xgh4  ===     0.000000000 ); assert(    xh2  ===     0.000000000 ); assert(    xh3  ===     0.000000000 ); assert(    xi2  ===     0.000000000 ); assert(    xi3  ===     0.000000000 ); 
+// assert(    xl2  ===     0.000000000 ); assert(    xl3  ===     0.000000000 ); assert(    xl4  ===     0.000000000 ); assert(  xlamo  ===     0.000000000 ); assert(   zmol  ===     0.000000000 ); assert(   zmos  ===     0.000000000 ); 
+// assert(  atime  ===     0.000000000 ); assert(    xli  ===     0.000000000 ); assert(    xni  ===     0.000000000 ); 
+} 
+def checkSgp4_5_720(res: Sgp4Result) = {
+ import res._
+ //   inputs : 
+ assert(  isimp  ===               0 ); assert( method  ===             110 ); assert(  aycof  ===     0.000660216 ); assert(  bstar  ===     0.000028098 ); assert(  con41  ===     1.048865088 ); assert(    cc1  ===     0.000000000 ); 
+ assert(    cc4  ===     0.000000526 ); assert(    cc5  ===     0.000016465 ); assert(     d2  ===     0.000000000 ); assert(     d3  ===     0.000000000 ); assert(     d4  ===     0.000000000 ); assert(  delmo  ===     4.873084659 ); 
+ assert(   ecco  ===     0.185966700 ); assert(    eta  ===     0.736909543 ); assert(  argpo  ===     5.790416027 ); assert( argpdot ===     0.000054293 ); assert(  omgcof ===     0.000000000 ); assert(  sinmao ===     0.330949230 ); 
+ assert(      t  ===   720.000000000 ); assert(  t2cof  ===     0.000000000 ); assert(  t3cof  ===     0.000000000 ); assert(  t4cof  ===     0.000000000 ); assert(  t5cof  ===     0.000000000 ); assert(  x1mth2 ===     0.317044971 ); 
+ assert(  x7thm1 ===     3.780685205 ); assert(  inclo  ===     0.598092919 ); assert(     mo  ===     0.337309313 ); assert(   mdot  ===     0.047229443 ); assert(    xno  ===     0.047206302 ); assert(  nodeo  ===     6.086385471 ); 
+ assert( nodedt  ===    -0.000037171 ); assert(  xlcof  ===     0.001289058 ); assert(  xmcof  ===    -0.000000000 ); assert(  nodecf ===    -0.000000000 ); 
+//    outputs : 
+assert(  error  ===               0 ); assert(      x  === -7134.593401193 ); assert(      y  ===  6531.686413336 ); assert(      z  ===  3260.271864826 ); assert(   xdot  ===    -4.113793027 ); assert(   ydot  ===    -2.911922039 ); assert(   zdot  ===    -2.557327851 ); 
+//    extra inputs for ds : 
+// assert(   irez  ===               0 ); assert(  d2201  ===     0.000000000 ); assert(  d2211  ===     0.000000000 ); assert(  d3210  ===     0.000000000 ); assert(  d3222  ===     0.000000000 ); 
+// assert(  d4410  ===     0.000000000 ); assert(  d4422  ===     0.000000000 ); assert(  d5220  ===     0.000000000 ); assert(  d5232  ===     0.000000000 ); assert(  d5421  ===     0.000000000 ); assert(  d5433  ===     0.000000000 ); 
+// assert(   dedt  ===     0.000000000 ); assert(   del1  ===     0.000000000 ); assert(   del2  ===     0.000000000 ); assert(   del3  ===     0.000000000 ); assert(   didt  ===     0.000000000 ); assert(   dmdt  ===     0.000000000 ); 
+// assert(  dnodt  ===     0.000000000 ); assert(  domdt  ===     0.000000000 ); assert(     e3  ===     0.000000000 ); assert(    ee2  ===     0.000000000 ); assert(    peo  ===     0.000000000 ); assert(   pgho  ===     0.000000000 ); 
+// assert(    pho  ===     0.000000000 ); assert(  pinco  ===     0.000000000 ); assert(    plo  ===     0.000000000 ); assert(    se2  ===     0.000000000 ); assert(    se3  ===     0.000000000 ); assert(   sgh2  ===     0.000000000 ); 
+// assert(   sgh3  ===     0.000000000 ); assert(   sgh4  ===     0.000000000 ); assert(    sh2  ===     0.000000000 ); assert(    sh3  ===     0.000000000 ); assert(    si2  ===     0.000000000 ); assert(    si3  ===     0.000000000 ); 
+// assert(    sl2  ===     0.000000000 ); assert(    sl3  ===     0.000000000 ); assert(    sl4  ===     0.000000000 ); assert(   gsto  ===     3.469172342 ); assert(  xfact  ===     0.000000000 ); assert(   xgh2  ===     0.000000000 ); 
+// assert(   xgh3  ===     0.000000000 ); assert(   xgh4  ===     0.000000000 ); assert(    xh2  ===     0.000000000 ); assert(    xh3  ===     0.000000000 ); assert(    xi2  ===     0.000000000 ); assert(    xi3  ===     0.000000000 ); 
+// assert(    xl2  ===     0.000000000 ); assert(    xl3  ===     0.000000000 ); assert(    xl4  ===     0.000000000 ); assert(  xlamo  ===     0.000000000 ); assert(   zmol  ===     0.000000000 ); assert(   zmos  ===     0.000000000 ); 
+// assert(  atime  ===     0.000000000 ); assert(    xli  ===     0.000000000 ); assert(    xni  ===     0.000000000 ); 
 } 
 // 5
                                    // ------------------after initl  :---------------

@@ -111,3 +111,8 @@ trait EarthHarmonicsAndDragSecularEffects {
   }
    
 }
+
+
+object SecularEffects extends EarthHarmonicsAndDragSecularEffects
+
+  

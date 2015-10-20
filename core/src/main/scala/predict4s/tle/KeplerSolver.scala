@@ -46,3 +46,5 @@ trait NewtonRaphsonKeplerSolver {
   }
 
 }
+
+object NewtonRaphsonKeplerSolver extends NewtonRaphsonKeplerSolver

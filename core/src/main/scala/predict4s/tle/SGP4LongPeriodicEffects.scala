@@ -7,7 +7,7 @@ import predict4s.tle.TEME.SGPElements
 
 trait SGP4LongPeriodicEffects {
   
-  def calculateSGP4LongPeriodicEffects[F: Field: NRoot : Order: Trig](tif: SGP4TimeIndependentFunctions[F], el: TEME.SGPElements[F], am: F) {
+  def calculateSGP4LongPeriodicEffects[F: Field: NRoot : Order: Trig](tif: SGP4TimeIndependentFunctions[F], el: TEME.SGPElements[F], am: F) = {
        /* ----------------- compute extra mean quantities ------------- */
     import el._
     val sinim = sin(i0) //  sin(inclm);
@@ -40,3 +40,5 @@ trait SGP4LongPeriodicEffects {
      (nodep, axnl, aynl, xl)
   }
 }
+
+object SGP4LongPeriodicEffects extends SGP4LongPeriodicEffects
