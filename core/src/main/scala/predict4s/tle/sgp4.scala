@@ -33,20 +33,20 @@ case class SGP4[F : Field : NRoot : Order : Trig](val state0: SGP4State[F]) {
     }
 }
 
-case class SGP4State[F : Field : NRoot : Order : Trig](t: F, elem: TEME.SGPElements[F], tif : SGP4TimeIndependentFunctions[F], posVel: TEME.CartesianPosVel[F])
+case class SGP4State[F : Field : NRoot : Order : Trig](t: F, elem: TEME.SGPElems[F], tif : SGP4TimeIndependentFunctions[F], posVel: TEME.CartesianElems[F])
 
 object SGP4 {
 
+  // TODO See if Delaunays variables can be introduced 
+  // this should use the state monad
   def apply[F : Field : NRoot : Order : Trig](tle: TLE)(implicit wgs : WGSConstants[F]) : SGP4[F] = {
     
-    val elem = TEME.SGPElements[F](tle)
+    val elem = TEME.sgpElems[F](tle)
     val tif  = SGP4TimeIndependentFunctions(elem)
-
-    // Propagate for time 0 minutes to get all initialized. 
-    // this should use the state monad
+      // Propagate for time 0 minutes to get all initialized. 
     val t = 0.as[F] 
     val (_, el, am) = SecularEffects.propagate(t)(tif)
-    
+
     val (nodep, axnl, aynl, xl) = SGP4LongPeriodicEffects.calculateSGP4LongPeriodicEffects(tif, el, am)
     
     val (eo1,ecosE,esinE) = NewtonRaphsonKeplerSolver.solveEccentricAnomaly(nodep, axnl, aynl, xl)

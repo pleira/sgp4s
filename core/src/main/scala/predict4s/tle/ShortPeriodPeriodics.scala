@@ -63,35 +63,12 @@ trait ShortPeriodPeriodicPerturbations {
          // here
     
      // unit position and velocity 
-    val uPV = calcUnitVectors(xinc, su, xnode)
+    val PV: TEME.CartesianElems[F] = TEME.coord2UnitCartesian(xinc, su, xnode)
     // return position and velocity (in km and km/sec)
-    val (p, v) = convertUnitVectors(uPV.pos, uPV.vel, mrt, mvt, rvdot)
-    TEME.CartesianPosVel(p,v)
+    val (p, v) = convertUnitVectors(PV.pos, PV.vel, mrt, mvt, rvdot)
+    TEME.CartesianElems(p(0),p(1),p(2),v(0),v(1),v(2))
   }
 
- 
-  def calcUnitVectors[F: Field: NRoot : Order: Trig](xinc: F, su: F, xnode: F) = {
-
-      /* --------------------- orientation vectors ------------------- */
-    // TODO: explain transformation
-    val     sinsu =  sin(su)
-    val     cossu =  cos(su)
-    val     snod  =  sin(xnode)
-    val     cnod  =  cos(xnode)
-    val     sini  =  sin(xinc)
-    val     cosi  =  cos(xinc)
-    val     xmx   = -snod * cosi
-    val     xmy   =  cnod * cosi
-    val     ux    =  xmx * sinsu + cnod * cossu
-    val     uy    =  xmy * sinsu + snod * cossu
-    val     uz    =  sini * sinsu
-    val     vx    =  xmx * cossu - cnod * sinsu
-    val     vy    =  xmy * cossu - snod * sinsu
-    val     vz    =  sini * cossu
-
-    // return unit vectors position and velocity
-    TEME.CartesianPosVel(Vector(ux,uy,uz), Vector(vx,vy,vz))
-  }
 
 
    /* --------- position and velocity (in km and km/sec) ---------- */

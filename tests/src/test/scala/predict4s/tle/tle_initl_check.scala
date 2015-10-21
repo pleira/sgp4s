@@ -9,24 +9,14 @@ import spire.implicits.{eqOps => _, _}
 
 class IntlCheckclass extends FunSuite  {
    
-  // for implicits
-  object ddd extends spire.std.DoubleInstances
   
   lazy val tles = TLE.parseFile("/SGP4-VER.TLE")
 
   implicit val wgs = WGS72Constants.tleDoubleConstants
   implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-4)
 
-  def f(tle: TLE) : TEME.SGPElements[Double] = TEME.SGPElements(tle)
-  
-  def g(el: TEME.SGPElements[Double]) : SGP4TimeIndependentFunctions[Double] = SGP4TimeIndependentFunctions(el)
-  
-  
     test("structure all") ({
     assert(tles.size == 32)
-    // map the tles to obtain a list with SGP4Elems and later map for SGP4TimeIndependentFunctions
-    
-    // val tifs : List[SGP4TimeIndependentFunctions[Double]] = tles.map(f).map(g)
      
     val inis0 : List[Sgp4Result] = tles.map(tle => Sgp4Result(tle, 0.0))
     val inis360 : List[Sgp4Result] = tles.map(tle => Sgp4Result(tle, 360.0))

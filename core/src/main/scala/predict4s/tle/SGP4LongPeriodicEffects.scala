@@ -3,11 +3,11 @@ package predict4s.tle
 import spire.algebra._
 import spire.math._
 import spire.implicits._
-import predict4s.tle.TEME.SGPElements
+import predict4s.tle.TEME.SGPElems
 
 trait SGP4LongPeriodicEffects {
   
-  def calculateSGP4LongPeriodicEffects[F: Field: NRoot : Order: Trig](tif: SGP4TimeIndependentFunctions[F], el: TEME.SGPElements[F], am: F) = {
+  def calculateSGP4LongPeriodicEffects[F: Field: NRoot : Order: Trig](tif: SGP4TimeIndependentFunctions[F], el: TEME.SGPElems[F], am: F) = {
        /* ----------------- compute extra mean quantities ------------- */
     import el._
     val sinim = sin(i0) //  sin(inclm);

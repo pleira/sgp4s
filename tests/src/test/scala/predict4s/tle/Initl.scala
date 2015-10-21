@@ -93,9 +93,9 @@ object Sgp4Vars {
   
   implicit val wgs = WGS72Constants.tleDoubleConstants
 
-  def f(tle: TLE) : TEME.SGPElements[Double] = TEME.SGPElements(tle)
+  def f(tle: TLE) : TEME.SGPElems[Double] = TEME.sgpElems(tle)
   
-  def g(el: TEME.SGPElements[Double]) : SGP4TimeIndependentFunctions[Double] = SGP4TimeIndependentFunctions(el)
+  def g(el: TEME.SGPElems[Double]) : SGP4TimeIndependentFunctions[Double] = SGP4TimeIndependentFunctions(el)
 
   def apply(tle: TLE) : Sgp4Vars = {
     import tle._ 
@@ -182,29 +182,15 @@ object Sgp4Result {
   
   implicit val wgs = WGS72Constants.tleDoubleConstants
 
-  def f(tle: TLE) : TEME.SGPElements[Double] = TEME.SGPElements(tle)
-  
-  def g(el: TEME.SGPElements[Double]) : SGP4TimeIndependentFunctions[Double] = SGP4TimeIndependentFunctions(el)
-
   def apply(tle: TLE, tt: Double) : Sgp4Result = {
-    import tle._ 
     
-    val tif : SGP4TimeIndependentFunctions[Double] = g(f(tle))
-    val (_, el, am) = SecularEffects.propagate[Double](tt)(tif)
+    val sgp4    = SGP4[Double](tle)
+    val statett = sgp4.propagate(tt)
     
-    val (nodep, axnl, aynl, xl) = SGP4LongPeriodicEffects.calculateSGP4LongPeriodicEffects(tif, el, am)
+    val r = statett.posVel.pos
+    val v = statett.posVel.vel
     
-    val (eo1,ecosE,esinE) = NewtonRaphsonKeplerSolver.solveEccentricAnomaly(nodep, axnl, aynl, xl)
-    val nm = el.n0
-    val xincp = el.i0
-    val cosip = cos(xincp)
-    val sinip = sin(xincp)
-    // here, should be something returned before in other coordinates 
-    val rv = ShortPeriodPeriodicPerturbations.calcPositionVelocity(tif, nm, xincp, cosip, sinip, am, nodep, axnl, aynl, xl, eo1)
-    val r = rv.pos
-    val v = rv.vel
-    
-    import tif._
+    import statett.tif._
   import wgs._
   import i0f._
   import e0f._
@@ -215,9 +201,9 @@ object Sgp4Result {
   import ocf._
   
     new Sgp4Result {
-      def satn = satelliteNumber
+      def satn = tle.satelliteNumber
       def ecco = e0
-      def epoch : Double = tif.ini.epoch 
+      def epoch : Double = statett.tif.ini.epoch 
       def inclo : Double = i0
     
       //def    no  : Double  = n0 // or n0k
@@ -227,26 +213,26 @@ object Sgp4Result {
       def  ainv  : Double    = 1 / a0 
       def    ao  : Double    = a0 
       def con41  : Double    = x3thm1   // FIXME for d
-      def con42  : Double    = tif.i0f.con42
+      def con42  : Double    = statett.tif.i0f.con42
       def cosio  : Double    = θ
       def cosio2 : Double    = θsq
       def eccsq  : Double    = e0sq 
       def omeosq : Double    = β0sq
-      def  posq  : Double    = tif.sf.posq
-      def    rp  : Double    = tif.bmmf.rp
+      def  posq  : Double    = statett.tif.sf.posq
+      def    rp  : Double    = statett.tif.bmmf.rp
       def rteosq : Double    = β0
-      def sinio  : Double    = tif.i0f.sinio
-      def  gsto  : Double    = tif.ocf.gsto    
+      def sinio  : Double    = statett.tif.i0f.sinio
+      def  gsto  : Double    = statett.tif.ocf.gsto    
       
       // ---
       def      yr  : Int    = tle.epochyear
-      def   bstar  : Double = tif.ini.bStar
-      def   argpo  : Double = tif.ini.ω0
-      def      mo  : Double = tif.ini.M0
+      def   bstar  : Double = statett.tif.ini.bStar
+      def   argpo  : Double = statett.tif.ini.ω0
+      def      mo  : Double = statett.tif.ini.M0
       def   isimp  : Int    = if ((omeosq >= 0.0) || (no >= 0.0))
                                     if (isImpacting || isDeepSpace) 1 else 0
                               else 0
-      def   aycof  : Double = tif.ocf.aycof // FIXME for d
+      def   aycof  : Double = statett.tif.ocf.aycof // FIXME for d
       def    cc1   : Double =  C1   
       def     cc4  : Double =  C4 
       def     cc5  : Double =  C5   
@@ -258,24 +244,24 @@ object Sgp4Result {
       def  argpdot : Double =  ωdot 
       def   omgcof : Double =  ωcof 
       def   sinmao : Double =  sinM0.toDouble
-      def   t2cof  : Double = tif.ilf.t2cof
-      def   t3cof  : Double = tif.ilf.t3cof
-      def   t4cof  : Double = tif.ilf.t4cof
-      def   t5cof  : Double = tif.ilf.t5cof
-      def  x1mth2  : Double = tif.i0f.x1mth2 // FIXME for d
-      def  x7thm1  : Double = tif.ocf.x7thm1 // FIXME for d
-      def   xlcof  : Double = tif.ocf.xlcof // FIXME for d
+      def   t2cof  : Double = statett.tif.ilf.t2cof
+      def   t3cof  : Double = statett.tif.ilf.t3cof
+      def   t4cof  : Double = statett.tif.ilf.t4cof
+      def   t5cof  : Double = statett.tif.ilf.t5cof
+      def  x1mth2  : Double = statett.tif.i0f.x1mth2 // FIXME for d
+      def  x7thm1  : Double = statett.tif.ocf.x7thm1 // FIXME for d
+      def   xlcof  : Double = statett.tif.ocf.xlcof // FIXME for d
       def   xmcof  : Double = Mcof
 //      def temp1 : Double = 3 * J2 / posq * no / 2  
 //      def temp2 : Double = J2/ posq *temp1 / 2
       //def    mdot  : Double = no + 0.5 * temp1 * rteosq * con41 + 0.0625 * temp2 * rteosq * (13.0 - 78.0 * cosio2 + 137.0 * cosio2*cosio2) // tif.ocf.mdot
       // def    mdot  : Double = no + temp1 * rteosq * con41 / 2 + temp2 * rteosq * (13 - 78 * cosio2 + 137 * cosio2*cosio2) / 16 // 
-      def    mdot  : Double = tif.ocf.mdot
+      def    mdot  : Double = statett.tif.ocf.mdot
       def   nodecf : Double = Ωcof
       def   nodedt : Double = omegadot     
       def        t          = tt
-      def   nodeo  : Double = tif.ini.Ω0
-      def      no  : Double = tif.bmmf.n0
+      def   nodeo  : Double = statett.tif.ini.Ω0
+      def      no  : Double = statett.tif.bmmf.n0
       def xno = no
       val error = 0
       val x = r(0); val y = r(1) ; val z = r(2); val xdot = v(0) ; val ydot = v(1) ; val zdot = v(2) ;

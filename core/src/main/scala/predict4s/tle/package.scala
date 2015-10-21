@@ -14,51 +14,35 @@ package object tle {
     def as[A](implicit ev:Field[A]) = ev.fromDouble(n)
   }
 
-  // true equator, mean equinox (TEME) (Herrick, 1971:325, 338, 341)
+  // true equator, mean equinox (TEME)
   
   object TEME extends ReferenceSystem {
-  
-    case class SGPElements[F](
-        n0 : F, // mean motion 
-        e0 : F, // eccentricity
-        i0 : F, // inclination
-        ω0 : F, // argument Of perigee
-        Ω0 : F, // right ascension ascending node
-        M0 : F, // mean anomaly
-        bStar : F, // atmospheric Drag Coeficient
-        epoch : F) // epoch time in days from jan 0, 1950. 0 hr
-  
-  
-    case class CartesianPosVel[F](pos: Vector[F], vel: Vector[F])
-        
-    object SGPElements {
      
-      def apply[F: Field: Trig](tle: TLE) :  TEME.SGPElements[F] = { 
-        val e0 = tle.eccentricity.toDouble.as[F]
-        val i0 = tle.inclination.toDouble.toRadians.as[F]
-        val pa = tle.argumentOfPeriapsis.toDouble.toRadians.as[F]
-        val raan = tle.rightAscension.toDouble.toRadians.as[F]
-        val meanAnomaly =  tle.meanAnomaly.toDouble.toRadians.as[F]
-        def meanMotion = tle.meanMotion.toDouble.as[F]
-        val year = tle.year
-        val bStar = tle.atmosphericDragCoeficient.toDouble.as[F]
-      
-        // in julian days
-        val epoch : F = {
-          val mdhms = days2mdhms(tle.year, tle.epoch.toDouble)
-          (jday(tle.year, mdhms._1, mdhms._2, mdhms._3, mdhms._4, mdhms._5) - 2433281.5).as[F]
-        }
-        val ω0 = pa
-        val Ω0 = raan
-        val M0 = meanAnomaly    
-        val radpm0 = revPerDay2RadPerMin(meanMotion)
+    def sgpElems[F: Field: Trig](tle: TLE) :  TEME.SGPElems[F] = { 
+      val e0 = tle.eccentricity.toDouble.as[F]
+      val i0 = tle.inclination.toDouble.toRadians.as[F]
+      val pa = tle.argumentOfPeriapsis.toDouble.toRadians.as[F]
+      val raan = tle.rightAscension.toDouble.toRadians.as[F]
+      val meanAnomaly =  tle.meanAnomaly.toDouble.toRadians.as[F]
+      def meanMotion = tle.meanMotion.toDouble.as[F]
+      val year = tle.year
+      val bStar = tle.atmosphericDragCoeficient.toDouble.as[F]
     
-        TEME.SGPElements[F](radpm0,e0,i0,pa,raan,M0,bStar,epoch)
+      // in julian days
+      val epoch : F = {
+        val mdhms = days2mdhms(tle.year, tle.epoch.toDouble)
+        (jday(tle.year, mdhms._1, mdhms._2, mdhms._3, mdhms._4, mdhms._5) - 2433281.5).as[F]
       }
-    
-      def revPerDay2RadPerMin[F: Field: Trig](rpd: F) : F = 2 * pi * rpd / 1440 
-    
+      val ω0 = pa
+      val Ω0 = raan
+      val M0 = meanAnomaly    
+      val radpm0 = revPerDay2RadPerMin(meanMotion)
+  
+      TEME.SGPElems[F](radpm0,e0,i0,pa,raan,M0,bStar,epoch)
     }
+    
+    def revPerDay2RadPerMin[F: Field: Trig](rpd: F) : F = 2 * pi * rpd / 1440 
+
   }
      
   // use old way of finding gst

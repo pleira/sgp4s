@@ -15,7 +15,7 @@ trait EarthHarmonicsAndDragSecularEffects {
   /** t is the duration in minutes from the epoch , then the SGP4 Time Independent Functions */
   def propagate[F: Field: NRoot : Order: Trig](t: F)(tind: SGP4TimeIndependentFunctions[F])
   (implicit wgs : WGSConstants[F])
-         : (SGP4TimeIndependentFunctions[F], TEME.SGPElements[F], F) = {
+         : (SGP4TimeIndependentFunctions[F], TEME.SGPElems[F], F) = {
     import tind._
     import tind.i0f._
     import tind.e0f._
@@ -35,6 +35,8 @@ trait EarthHarmonicsAndDragSecularEffects {
     
     val t2 = t*t
     val Ωm = Ωdf + Ωcof*t2 // nodem, right asc of ascending node
+    
+    // TODO See if Delaunays variables can be introduced 
     
     // It should be noted that when epoch perigee height is less than
     // 220 kilometers, the equations for a and IL are truncated after the C1 term, 
@@ -87,7 +89,7 @@ trait EarthHarmonicsAndDragSecularEffects {
        {
          // sgp4fix to return if there is an error in eccentricity
          // return false;
-        return (tind, TEME.SGPElements[F](am, emt, i0, ωm, Ωm, _Mp, bStar, refepoch), am)  
+        return (tind, TEME.SGPElems[F](am, emt, i0, ωm, Ωm, _Mp, bStar, refepoch), am)  
        }
 
      // sgp4fix fix tolerance to avoid a divide by zero
@@ -104,8 +106,8 @@ trait EarthHarmonicsAndDragSecularEffects {
      val lm      = xlm % twopi
      val Mm      = (lm - ω - Ω) % twopi
      
-     // Better SGPElements (radpm0,e0,i0,pa,raan,M0,bStar,refepoch)
-    (tind, TEME.SGPElements[F](nm, em, i0, ω, Ω, Mm,bStar, refepoch), am)  
+     // Better SGPElems (radpm0,e0,i0,pa,raan,M0,bStar,refepoch)
+    (tind, TEME.SGPElems[F](nm, em, i0, ω, Ω, Mm,bStar, refepoch), am)  
     // Return a different structure here for the long periodic effects
     
   }

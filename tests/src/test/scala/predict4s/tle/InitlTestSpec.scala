@@ -94,7 +94,7 @@ nodedt    -0.000051677 xlcof     0.001836762 xmcof    -0.000133147 nodecf   -0.0
   test("structure all") ({
     assert(tles.size == 32 && rmap.size == 32)
     
-    def checkIni(satelliteNumber : Int, ini: TEME.SGPElements[Double]) : Unit = {
+    def checkIni(satelliteNumber : Int, ini: TEME.SGPElems[Double]) : Unit = {
       val r = resultsIni.get(satelliteNumber).get
       import ini._
       assert(e0 === r._1)  //ecco
@@ -140,7 +140,7 @@ nodedt    -0.000051677 xlcof     0.001836762 xmcof    -0.000133147 nodecf   -0.0
     var j = 0
     for (j <- 0 to 2) {
       val tle = tles(j)
-      val ini = TEME.SGPElements[Double](tle)
+      val ini = TEME.sgpElems[Double](tle)
       val tIndep = SGP4TimeIndepFunctions[Double](ini)
       checkIni(tle.satelliteNumber, ini)
       checkTimeIndepCoeficients(tle.satelliteNumber, tIndep)   
@@ -161,7 +161,7 @@ nodedt    -0.000051677 xlcof     0.001836762 xmcof    -0.000133147 nodecf   -0.0
     
     val tle = tles(0)
     assert(tle.satelliteNumber == 5)
-    val state0 = SGP4TimeIndepFunctions[Double](TEME.SGPElements[Double](tle))
+    val state0 = SGP4TimeIndepFunctions[Double](TEME.sgpElems[Double](tle))
     // assert(state0.a0 === 1.353899821)
     // assert(state0.a0dp === )
     

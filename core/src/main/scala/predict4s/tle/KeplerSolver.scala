@@ -3,7 +3,7 @@ package predict4s.tle
 import spire.algebra._
 import spire.math._
 import spire.implicits._
-import predict4s.tle.TEME.SGPElements
+import predict4s.tle.TEME.SGPElems
 
 /**
  *  Kepler's equation

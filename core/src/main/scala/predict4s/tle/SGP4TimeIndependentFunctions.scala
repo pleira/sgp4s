@@ -3,7 +3,7 @@ package predict4s.tle
 import spire.algebra._
 import spire.math._
 import spire.implicits._
-import predict4s.tle.TEME.SGPElements
+import predict4s.tle.TEME.SGPElems
 
 
 /**
@@ -15,7 +15,7 @@ import predict4s.tle.TEME.SGPElements
  * (Reference http://aero.tamu.edu/sites/default/files/faculty/alfriend/S6.1%20Hoots.pdf)
  */
 case class SGP4TimeIndependentFunctions[F: Field: NRoot : Order: Trig] private (
-    val ini  : TEME.SGPElements[F], 
+    val ini  : TEME.SGPElems[F], 
     val i0f  : InclFunctions[F],
     val e0f  : EccentricityFunctions[F],
     val bmmf : BrowerMeanMotion[F],
@@ -25,7 +25,7 @@ case class SGP4TimeIndependentFunctions[F: Field: NRoot : Order: Trig] private (
     val ocf  : OtherCoefs[F]
     ) 
 
-case class OtherCoefs[F : Field: NRoot : Order: Trig](ini: TEME.SGPElements[F], i0f : InclFunctions[F], e0f : EccentricityFunctions[F],
+case class OtherCoefs[F : Field: NRoot : Order: Trig](ini: TEME.SGPElems[F], i0f : InclFunctions[F], e0f : EccentricityFunctions[F],
       bmmf: BrowerMeanMotion[F], sf : ScalcFunctions[F], coeff : CoefFunctions[F])(implicit wgs : WGSConstants[F]) {
     
   import i0f._
@@ -303,7 +303,7 @@ case class ILCoefs[F: Field](cf : CoefFunctions[F]) {
 
 object SGP4TimeIndependentFunctions {
   
-  def apply[F: Field: NRoot : Order: Trig](ini : TEME.SGPElements[F])(implicit wgs : WGSConstants[F]) : SGP4TimeIndependentFunctions[F] = {
+  def apply[F: Field: NRoot : Order: Trig](ini : TEME.SGPElems[F])(implicit wgs : WGSConstants[F]) : SGP4TimeIndependentFunctions[F] = {
     import ini._
     val i0f  = InclFunctions(i0)
     val e0f  = EccentricityFunctions(e0)
