@@ -9,7 +9,7 @@ trait ShortPeriodPeriodicPerturbations {
   
   // should be here be Delauney's elements?
   
-  def calcUnitVectorsAndCoefs[F: Field: NRoot : Order: Trig](tind: SGP4TimeIndependentFunctions[F], nm: F, xincp: F, cosip: F, sinip: F, am: F, nodep: F, axnl: F, aynl: F, xl : F, eo1: F)
+  def calcPositionVelocity[F: Field: NRoot : Order: Trig](tind: SGP4TimeIndependentFunctions[F], nm: F, xincp: F, cosip: F, sinip: F, am: F, nodep: F, axnl: F, aynl: F, xl : F, eo1: F)
   (implicit wgs : WGSConstants[F])  = {
     
     
@@ -61,11 +61,12 @@ trait ShortPeriodPeriodicPerturbations {
      val    mvt   = rdotl - nm * temp1 * x1mth2 * sin2u / KE
      val    rvdot = rvdotl + nm * temp1 * (x1mth2 * cos2u + 1.5 * con41) / KE
          // here
-     
-    val (upos, uvel) = calcUnitVectors(xinc, su, xnode)
-  
+    
+     // unit position and velocity 
+    val uPV = calcUnitVectors(xinc, su, xnode)
     // return position and velocity (in km and km/sec)
-    convertUnitVectors(upos, uvel, mrt, mvt, rvdot)
+    val (p, v) = convertUnitVectors(uPV.pos, uPV.vel, mrt, mvt, rvdot)
+    TEME.CartesianPosVel(p,v)
   }
 
  
@@ -89,7 +90,7 @@ trait ShortPeriodPeriodicPerturbations {
     val     vz    =  sini * cossu
 
     // return unit vectors position and velocity
-    (Vector(ux,uy,uz), Vector(vx,vy,vz))
+    TEME.CartesianPosVel(Vector(ux,uy,uz), Vector(vx,vy,vz))
   }
 
 

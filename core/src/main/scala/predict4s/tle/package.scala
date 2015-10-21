@@ -5,8 +5,6 @@ import spire.implicits._
 
 package object tle {
   
-  //type FNOT = Field with NRoot with Order with Trig
-  
   // FIXME: to remove with a Spire version > 10.2
   implicit class IntAs(val n:Int)  {
     def as[A](implicit ev:Ring[A]) = ev.fromInt(n)
@@ -30,7 +28,9 @@ package object tle {
         bStar : F, // atmospheric Drag Coeficient
         epoch : F) // epoch time in days from jan 0, 1950. 0 hr
   
-    
+  
+    case class CartesianPosVel[F](pos: Vector[F], vel: Vector[F])
+        
     object SGPElements {
      
       def apply[F: Field: Trig](tle: TLE) :  TEME.SGPElements[F] = { 
@@ -53,7 +53,7 @@ package object tle {
         val M0 = meanAnomaly    
         val radpm0 = revPerDay2RadPerMin(meanMotion)
     
-        TEME.SGPElements[F](radpm0,e0,i0,pa,raan,M0,bStar, epoch)
+        TEME.SGPElements[F](radpm0,e0,i0,pa,raan,M0,bStar,epoch)
       }
     
       def revPerDay2RadPerMin[F: Field: Trig](rpd: F) : F = 2 * pi * rpd / 1440 

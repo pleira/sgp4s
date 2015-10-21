@@ -200,7 +200,9 @@ object Sgp4Result {
     val cosip = cos(xincp)
     val sinip = sin(xincp)
     // here, should be something returned before in other coordinates 
-    val (r,v) = ShortPeriodPeriodicPerturbations.calcUnitVectorsAndCoefs(tif, nm, xincp, cosip, sinip, am, nodep, axnl, aynl, xl, eo1)
+    val rv = ShortPeriodPeriodicPerturbations.calcPositionVelocity(tif, nm, xincp, cosip, sinip, am, nodep, axnl, aynl, xl, eo1)
+    val r = rv.pos
+    val v = rv.vel
     
     import tif._
   import wgs._
