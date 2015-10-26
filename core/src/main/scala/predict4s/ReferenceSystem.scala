@@ -48,9 +48,11 @@ trait ReferenceSystem {
     def pos = Vector[F](x,y,z)
     def vel = Vector[F](vx,vy,vz)
   }
-    
+   /**
+    *  the Delaunay actions are L, G and H with units of angular momentum    
+    */
   case class DelaunayElems[F](
-        ℓ : F, L : F,  // mean anomaly and its conjugate momentum L = √µ a (the Delaunay action),
+        ℓ : F, L : F,  // mean anomaly and its conjugate momentum L = √µ a ,
         g : F, G : F,  // the argument of the perigee g = ω and its conjugate momentum G = L√(1 − e*e)
                        // (the total angular momentum), where e is the orbital eccentricity, 
         h : F, H : F   // the argument of the node h and its conjugate momentum H = G cosI (the polar component of the angular momentum).       
@@ -77,7 +79,14 @@ trait ReferenceSystem {
   
       // return unit vectors position and velocity
       CartesianElems(ux,uy,uz,vx,vy,vz)
-    }  
+  }
+  
+    def classical2DelaunayElems[F: Field: Trig: NRoot]( oe : ClassicalElems[F], MU : F) : DelaunayElems[F] = {
+//  def classical2DelaunayElems[F: Field: Trig: NRoot]( oe : ClassicalElems[F])(implicit wgs: WGSConstants[F]) : DelaunayElems[F] = {
+    import oe._
+    val L = (MU*a).sqrt; val G = L*(1 - e*e).sqrt; val H = G*cos(i)
+    DelaunayElems(M, L, ω, G, Ω, H)
+  }
 }
 
 // can we do without exceptions, just scala.util.Try?

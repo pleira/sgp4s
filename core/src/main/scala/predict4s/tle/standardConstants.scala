@@ -1,22 +1,20 @@
 package predict4s.tle
+
 import spire.algebra._
 import spire.math._
 import spire.implicits._
+
+
 
 trait WGSConstants[F] {
 
   /** sqrt(Grativational Constant * Earths's Mass) */
   def MU: F
-  
   /** Equatorial radius of the Earth in km */ 
   def aE: F
   // def EARTH_RADIUS = aE
-  
   /**  sqrt (Grativational Constant * Earths's Mass)  in units (Earths Radii)** 1.5 / minute */
   def KE: F
-  
-  // spherical harmonics 
-  
   /** J2 spherical harmonic value */
   def J2: F
   /** J3 spherical harmonic value */
@@ -33,7 +31,7 @@ trait WGSConstants[F] {
 }
 
 abstract class WGS[F: Field]() extends WGSConstants[F] {
-  def K2    = J2 * aE * aE / 2
+  def K2    = J2 * aE  / 2 // We use Vallado's, in reality J2 * aE * aE / 2
   def K4    = -3*J4* aE * aE * aE * aE / 8
   def A3OVK2 = - J3 / K2
   def A30    = - J3 * aE * aE * aE
@@ -77,7 +75,7 @@ class WGS84Constants[F: Field]() extends WGS[F] {
   override val K2     =   super.K2
   override val K4     =   super.K4
 }
-
+  
 object WGS721Constants {
   implicit lazy val tleDoubleConstants = new WGS721Constants[Double]()  
   implicit lazy val tleRealConstants = new WGS721Constants[Real]()
@@ -92,7 +90,6 @@ object WGS84Constants {
   implicit lazy val tleDoubleConstants = new WGS84Constants[Double]()  
   implicit lazy val tleRealConstants = new WGS84Constants[Real]() 
 }
-
 // Variable name Definition Value as given in Hoots document
 //CK2 = 5.413080E-4 // 1/2 J2aE
 //CK4 = .62098875E-6 //  J4

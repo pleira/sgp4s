@@ -10,8 +10,8 @@ trait SGP4LongPeriodicEffects {
   def calculateSGP4LongPeriodicEffects[F: Field: NRoot : Order: Trig](tif: SGP4TimeIndependentFunctions[F], el: TEME.SGPElems[F], am: F) = {
        /* ----------------- compute extra mean quantities ------------- */
     import el._
-    val sinim = sin(i0) //  sin(inclm);
-    val cosim = cos(i0)
+    //val sinim = sin(i) //  sin(inclm);
+    //val cosim = cos(i)
 
 //     ep     = em;
 //     xincp  = inclm;
@@ -23,13 +23,13 @@ trait SGP4LongPeriodicEffects {
     
     // p for periodics
     // inputs are the mean elements
-     val ep     = e0 
-     val xincp  = i0 
-     val argpp  = ω0 
-     val nodep  = Ω0 
-     val mp     = M0 
-     val sinip  = sinim 
-     val cosip  = cosim 
+     val ep     = e 
+     val xincp  = i 
+     val argpp  = ω 
+     val nodep  = Ω 
+     val mp     = M 
+     //val sinip  = sinim 
+     //val cosip  = cosim 
      
      val axnl = ep * cos(argpp)
      val temp = 1 / (am * (1 - ep * ep))

@@ -24,7 +24,9 @@ val tleLines = List("#                       # TEME example",
   val tles = TLE.parseLines(tleLines)
 
   implicit val wgs = WGS72Constants.tleDoubleConstants
-  implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-1)
+  // the propagation is within meter resolution for the first satellite for long periods
+  // todo: separate comparison of position/velocity from other terms
+  implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(8E-2)
 
     test("structure all") ({
     assert(tles.size == 3)

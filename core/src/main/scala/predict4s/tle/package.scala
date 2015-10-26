@@ -3,8 +3,9 @@ import spire.algebra._
 import spire.math._
 import spire.implicits._
 
+
 package object tle {
-  
+    
   // FIXME: to remove with a Spire version > 10.2
   implicit class IntAs(val n:Int)  {
     def as[A](implicit ev:Ring[A]) = ev.fromInt(n)

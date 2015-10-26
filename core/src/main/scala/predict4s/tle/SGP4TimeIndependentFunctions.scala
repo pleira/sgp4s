@@ -6,6 +6,7 @@ import spire.implicits._
 import predict4s.tle.TEME.SGPElems
 
 
+
 /**
  * Contains the TimeIndependentFunctions from SGP4
  * all equations below are inspired from SPACETRACK Report #3 by Hoots and Roehrich
@@ -26,7 +27,7 @@ case class SGP4TimeIndependentFunctions[F: Field: NRoot : Order: Trig] private (
     ) 
 
 case class OtherCoefs[F : Field: NRoot : Order: Trig](ini: TEME.SGPElems[F], i0f : InclFunctions[F], e0f : EccentricityFunctions[F],
-      bmmf: BrowerMeanMotion[F], sf : ScalcFunctions[F], coeff : CoefFunctions[F])(implicit wgs : WGSConstants[F]) {
+      bmmf: BrowerMeanMotion[F], sf : ScalcFunctions[F], coeff : CoefFunctions[F])(implicit wgs: WGSConstants[F]) {
     
   import i0f._
   import e0f._
@@ -141,7 +142,7 @@ case class EccentricityFunctions[F: Field: NRoot](val e0: F) {
     def rteosq     = β0sq
 }
 
-case class BrowerMeanMotion[F: Field: Order: NRoot](n0k: F, i0f : InclFunctions[F], e0f : EccentricityFunctions[F])(implicit wgs : WGSConstants[F])  {
+case class BrowerMeanMotion[F: Field: Order: NRoot](n0k: F, i0f : InclFunctions[F], e0f : EccentricityFunctions[F])(implicit wgs: WGSConstants[F])  {
   import wgs._
   import i0f._
   import e0f._
@@ -181,7 +182,7 @@ case class BrowerMeanMotion[F: Field: Order: NRoot](n0k: F, i0f : InclFunctions[
 }
 
 case class ScalcFunctions[F: Field: NRoot: Order: Trig](e0f : EccentricityFunctions[F], bmmf: BrowerMeanMotion[F])
-  (implicit wgs : WGSConstants[F])  {
+  (implicit wgs: WGSConstants[F])  {
   import wgs._
   // import i0f._
   import e0f._
@@ -237,7 +238,7 @@ case class ScalcFunctions[F: Field: NRoot: Order: Trig](e0f : EccentricityFuncti
 }
 
 case class CoefFunctions[F: Field: NRoot: Order: Trig](ω0: F, bStar: F, i0f : InclFunctions[F], e0f : EccentricityFunctions[F], 
-    bmmf: BrowerMeanMotion[F], sf: ScalcFunctions[F])(implicit wgs : WGSConstants[F])  {
+    bmmf: BrowerMeanMotion[F], sf: ScalcFunctions[F])(implicit wgs: WGSConstants[F])  {
   import wgs._
   import i0f._
   import e0f._
@@ -303,7 +304,7 @@ case class ILCoefs[F: Field](cf : CoefFunctions[F]) {
 
 object SGP4TimeIndependentFunctions {
   
-  def apply[F: Field: NRoot : Order: Trig](ini : TEME.SGPElems[F])(implicit wgs : WGSConstants[F]) : SGP4TimeIndependentFunctions[F] = {
+  def apply[F: Field: NRoot : Order: Trig](ini : TEME.SGPElems[F])(implicit wgs: WGSConstants[F]) : SGP4TimeIndependentFunctions[F] = {
     import ini._
     val i0f  = InclFunctions(i0)
     val e0f  = EccentricityFunctions(e0)

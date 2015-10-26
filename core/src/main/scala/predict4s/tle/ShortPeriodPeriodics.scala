@@ -4,13 +4,15 @@ import spire.algebra._
 import spire.implicits._
 import spire.math._
 
+
+
 trait ShortPeriodPeriodicPerturbations {
   
   
   // should be here be Delauney's elements?
   
   def calcPositionVelocity[F: Field: NRoot : Order: Trig](tind: SGP4TimeIndependentFunctions[F], nm: F, xincp: F, cosip: F, sinip: F, am: F, nodep: F, axnl: F, aynl: F, xl : F, eo1: F)
-  (implicit wgs : WGSConstants[F])  = {
+  (implicit wgs: WGSConstants[F])  = {
     
     
     import tind._
@@ -72,7 +74,7 @@ trait ShortPeriodPeriodicPerturbations {
 
    /* --------- position and velocity (in km and km/sec) ---------- */
   def convertUnitVectors[F: Field: NRoot : Order: Trig](pos : Vector[F], vel : Vector[F], mrt: F, mvt: F, rvdot: F)
-  (implicit wgs : WGSConstants[F]) : (Vector[F], Vector[F]) = {
+  (implicit wgs: WGSConstants[F]) : (Vector[F], Vector[F]) = {
       import wgs._      
      ( (aE*mrt) *: pos,  vkmpersec *: (mvt *: pos + rvdot *: vel))
   }

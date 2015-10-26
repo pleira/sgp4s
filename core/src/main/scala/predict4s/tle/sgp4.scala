@@ -7,6 +7,7 @@ import spire.implicits._
 import scala.{ specialized => spec }
 
 
+
 /** The SGP-4 theory is applied for all orbits with periods of T <= 225 min. It
  * performs a propagation in time of doubly averaged elements according to their
  * secular rates of change due to the zonal harmonics J2 and J4 of the Earth potential,
@@ -19,7 +20,7 @@ import scala.{ specialized => spec }
  */
 case class SGP4[F : Field : NRoot : Order : Trig](val state0: SGP4State[F]) {
      
-    def propagate(t: F)(implicit wgs : WGSConstants[F]) : SGP4State[F] = {
+    def propagate(t: F)(implicit wgs: WGSConstants[F]) : SGP4State[F] = {
       val (_, el, am) = SecularEffects.propagate(t)(state0.tif)
       val (nodep, axnl, aynl, xl) = SGP4LongPeriodicEffects.calculateSGP4LongPeriodicEffects(state0.tif, el, am)
       val (eo1,ecosE,esinE) = NewtonRaphsonKeplerSolver.solveEccentricAnomaly(nodep, axnl, aynl, xl)
@@ -39,7 +40,7 @@ object SGP4 {
 
   // TODO See if Delaunays variables can be introduced 
   // this should use the state monad
-  def apply[F : Field : NRoot : Order : Trig](tle: TLE)(implicit wgs : WGSConstants[F]) : SGP4[F] = {
+  def apply[F : Field : NRoot : Order : Trig](tle: TLE)(implicit wgs: WGSConstants[F]) : SGP4[F] = {
     
     val elem = TEME.sgpElems[F](tle)
     val tif  = SGP4TimeIndependentFunctions(elem)
