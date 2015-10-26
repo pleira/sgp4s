@@ -10,7 +10,7 @@ import spire.implicits.{eqOps => _, _}
 class IntlCheckclass extends FunSuite  {
    
   
-  lazy val tles = TLE.parseFile("/SGP4-VER.TLE")
+  lazy val tles = TLE.parseResource("/SGP4-VER.TLE")
 
   implicit val wgs = WGS72Constants.tleDoubleConstants
   implicit val doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-4)
@@ -18,8 +18,8 @@ class IntlCheckclass extends FunSuite  {
     test("structure all") ({
     assert(tles.size == 32)
      
-    val inis0 : List[Sgp4Result] = tles.map(tle => Sgp4Result(tle, 0.0))
-    val inis360 : List[Sgp4Result] = tles.map(tle => Sgp4Result(tle, 360.0))
+    val inis0 : List[Sgp4Result] = tles.map(tle => Sgp4Result(tle)(0.0))
+    val inis360 : List[Sgp4Result] = tles.map(tle => Sgp4Result(tle)(360.0))
     
     val it = inis0.iterator
  val s5 = it.next
@@ -87,11 +87,12 @@ checkIntl28057(s28057)
 
  
 checkSgp4_5_0(s5)
+checkSgp4_5_360(s5_360)
+//checkSgp4_5_720(s5_720)
+//checkSgp4_5_1440(s5_1440)
 
  //doubleEquality = TolerantNumerics.tolerantDoubleEquality(1E-8)
     
-checkSgp4_5_360(s5_360)
-//checkSgp4_5_0(s5)
 
 //checkSgp4Init5(s5)
 //checkSgp4Init4632(s4632)

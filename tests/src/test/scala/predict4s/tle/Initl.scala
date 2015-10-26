@@ -182,7 +182,7 @@ object Sgp4Result {
   
   implicit val wgs = WGS72Constants.tleDoubleConstants
 
-  def apply(tle: TLE, tt: Double) : Sgp4Result = {
+  def apply(tle: TLE)(tt: Double) : Sgp4Result = {
     
     val sgp4    = SGP4[Double](tle)
     val statett = sgp4.propagate(tt)

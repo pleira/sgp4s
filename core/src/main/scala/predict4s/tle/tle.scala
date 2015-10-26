@@ -80,23 +80,30 @@ object TLE {
     if (year > 2056) (year - 100) else year
   }
 
-  def parseFile(path: String) : List[TLE] = {
-    val input = io.Source.fromInputStream(getClass.getResourceAsStream(path))
-    val iter = input.getLines()
-    var tmplist = List[TLE]() // scala.collection.mutable.LinkedList[TLE]();
+  
+  def parseFile(path: String): List[TLE] = {
+    parseLines(io.Source.fromFile(path).getLines.toList)
+  }
+  
+  def parseResource(path: String): List[TLE] = {
+    parseLines(io.Source.fromInputStream(getClass.getResourceAsStream(path)).getLines.toList)
+  }
+
+  def parseLines(list: List[String]) : List[TLE] = {
+    var queue = new scala.collection.mutable.Queue[TLE]() // scala.collection.mutable.LinkedList[TLE]();
+    val iter = list.iterator
     while (iter.hasNext) {
       val line1 = iter.next()
       if (!line1.startsWith("#")) {
         val line2 = iter.next()
         if (!line2.startsWith("#")) {
-          tmplist = apply(line1, line2) :: tmplist
+          queue += apply(line1, line2)           
         }
       }
     }
-    input.close()
-    val tles = tmplist.reverse
-    tles
+    queue.toList  
   }
+  
   
   import java.util.regex.Pattern;
   

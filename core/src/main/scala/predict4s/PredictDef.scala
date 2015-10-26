@@ -56,23 +56,23 @@ trait ReferenceSystem {
         h : F, H : F   // the argument of the node h and its conjugate momentum H = G cosI (the polar component of the angular momentum).       
   )
   
-  
-  def coord2UnitCartesian[F: Field: Trig](xinc: F, su: F, xnode: F) = {
+  // inclination, su and right ascension ascending node
+  def coord2UnitCartesian[F: Field: Trig](incl: F, su: F, Ω: F) = {
   
       /* --------------------- orientation vectors ------------------- */
       val     sinsu =  sin(su)
       val     cossu =  cos(su)
-      val     snod  =  sin(xnode)
-      val     cnod  =  cos(xnode)
-      val     sini  =  sin(xinc)
-      val     cosi  =  cos(xinc)
-      val     xmx   = -snod * cosi
-      val     xmy   =  cnod * cosi
-      val     ux    =  xmx * sinsu + cnod * cossu
-      val     uy    =  xmy * sinsu + snod * cossu
+      val     snode =  sin(Ω)
+      val     cnode =  cos(Ω)
+      val     sini  =  sin(incl)
+      val     cosi  =  cos(incl)
+      val     xmx   = -snode * cosi
+      val     xmy   =  cnode * cosi
+      val     ux    =  xmx * sinsu + cnode * cossu
+      val     uy    =  xmy * sinsu + snode * cossu
       val     uz    =  sini * sinsu
-      val     vx    =  xmx * cossu - cnod * sinsu
-      val     vy    =  xmy * cossu - snod * sinsu
+      val     vx    =  xmx * cossu - cnode * sinsu
+      val     vy    =  xmy * cossu - snode * sinsu
       val     vz    =  sini * cossu
   
       // return unit vectors position and velocity

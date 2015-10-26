@@ -35,13 +35,13 @@ trait ShortPeriodPeriodicPerturbations {
      val    rdotl  = sqrt(am) * esine/rl
      val    rvdotl = sqrt(pl) / rl
      val    betal  = sqrt(1 - el2)
-     var    temp   = esine / (1 + betal)
-     val    sinu   = am / rl * (sineo1 - aynl - axnl * temp)
-     val    cosu   = am / rl * (coseo1 - axnl + aynl * temp)
-     var    su     = atan2(sinu, cosu)
+     val    temp0  = esine / (1 + betal)
+     val    sinu   = am / rl * (sineo1 - aynl - axnl * temp0)
+     val    cosu   = am / rl * (coseo1 - axnl + aynl * temp0)
+     val    su0    = atan2(sinu, cosu)
      val    sin2u  = (cosu + cosu) * sinu
      val    cos2u  = 1 - 2.0 * sinu * sinu
-            temp   = 1/ pl
+     val    temp   = 1/ pl
      val    temp1  = 0.5 * J2 * temp
      val    temp2  = temp1 * temp
 
@@ -53,10 +53,9 @@ trait ShortPeriodPeriodicPerturbations {
 //             satrec.x1mth2 = 1- cosisq
 //             satrec.x7thm1 = 7.0*cosisq - 1.0
 //           }
-     val    mrt   = rl * (1 - 1.5 * temp2 * betal * con41) +
-                 0.5 * temp1 * x1mth2 * cos2u
-            su    = su - 0.25 * temp2 * x7thm1 * sin2u;
-     val    xnode = nodep + 1.5 * temp2 * cosip * sin2u;
+     val    mrt   = rl * (1 - 1.5 * temp2 * betal * con41) + 0.5 * temp1 * x1mth2 * cos2u
+     val    su    = su0 - 0.25 * temp2 * x7thm1 * sin2u
+     val    xnode = nodep + 1.5 * temp2 * cosip * sin2u
      val    xinc  = xincp + 1.5 * temp2 * cosip * sinip * cos2u
      val    mvt   = rdotl - nm * temp1 * x1mth2 * sin2u / KE
      val    rvdot = rvdotl + nm * temp1 * (x1mth2 * cos2u + 1.5 * con41) / KE
