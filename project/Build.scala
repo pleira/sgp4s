@@ -18,11 +18,11 @@ object MyBuild extends Build {
 
   // Dependencies
   
-  lazy val spireMath = "org.spire-math" %% "spire" % "0.9.1"
+  lazy val spireMath = "org.spire-math" %% "spire" % "0.11.0"
   //lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.2.1"
-  lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.1.3"
+  lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4"
   // lazy val scalaUtils = "org.scalautils" %% "scalautils" % "2.1.5"
-  lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.12.1"
+  lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.12.5"
 
   // Release step
 
@@ -53,9 +53,9 @@ object MyBuild extends Build {
   override lazy val settings = super.settings ++ Seq(
     organization := "sgp4s",
 
-    scalaVersion := "2.11.5",
+    scalaVersion := "2.11.7",
 
-    crossScalaVersions := Seq("2.11.5"),
+    crossScalaVersions := Seq("2.11.7"),
 
     licenses := Seq("BSD-style" -> url("http://opensource.org/licenses/MIT")),
     homepage := Some(url("http://www.pitagoral.com")),
@@ -151,7 +151,7 @@ object MyBuild extends Build {
   lazy val coreSettings = Seq(
     name := "sgp4s",
     libraryDependencies ++= Seq(
-   "org.spire-math" %% "spire" % "0.9.1",
+   "org.spire-math" %% "spire" % "0.11.0",
       spireMath % "compile",
       scalaCheck % "test",
       scalaTest % "test"

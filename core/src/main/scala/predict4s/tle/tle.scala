@@ -1,10 +1,11 @@
+package predict4s.tle 
+
 /**
+ * TLE represents the non converted data given bz a Two Line Element.
+ * No double mumeric conversions done here, so double values are returned as Strings.
  * See Dr. T.S. Kelso comments on TLE at 
  * http://www.celestrak.com/columns/v04n03/
  */
-package predict4s.tle 
-
-// No double mumeric conversions done here, so double values are returned as Strings
 trait TLE {
   def lineNumber: Int
   def satelliteNumber: Int
@@ -16,8 +17,7 @@ trait TLE {
   def elementNumber: Int
   def epochyear: Int
   def year: Int
-  // day of the year and fractional portion of the day)
-  def epoch: String
+  def epoch: String      // day of the year and fractional portion of the day
   def meanMotion: String
   def meanMotionFirstDerivative: String
   def meanMotionSecondDerivative: String
@@ -150,6 +150,3 @@ object TLE {
   }
 
 }
-
-
-// } // end package

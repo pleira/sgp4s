@@ -1,51 +1,34 @@
 package predict4s
-import spire.algebra._
-import spire.math._
-import spire.implicits._
 
+import scala.Vector
+
+import spire.algebra.EuclideanRing
+import spire.algebra.Field
+import spire.algebra.Order
+import spire.implicits.DoubleAlgebra
+import spire.implicits.additiveGroupOps
+import spire.implicits.additiveSemigroupOps
+import spire.implicits.literalDoubleMultiplicativeSemigroupOps
+import spire.implicits.multiplicativeGroupOps
+import spire.implicits.multiplicativeSemigroupOps
+import spire.implicits.partialOrderOps
+import spire.math.floor
+import spire.math.pi
+import spire.syntax.primitives.DoubleAs
+import spire.syntax.primitives.IntAs
+import predict4s.refsystem.ReferenceSystem
 
 package object tle {
     
-  // FIXME: to remove with a Spire version > 10.2
-  implicit class IntAs(val n:Int)  {
-    def as[A](implicit ev:Ring[A]) = ev.fromInt(n)
-  }
+  /**
+   *  True equator, mean equinox (TEME)
+   *  
+   *  Transformations done in this reference system.
+   */
+  object TEME extends ReferenceSystem 
 
-  implicit class DoubleAs(val n:Double) {
-    def as[A](implicit ev:Field[A]) = ev.fromDouble(n)
-  }
-
-  // true equator, mean equinox (TEME)
-  
-  object TEME extends ReferenceSystem {
-     
-    def sgpElems[F: Field: Trig](tle: TLE) :  TEME.SGPElems[F] = { 
-      val e0 = tle.eccentricity.toDouble.as[F]
-      val i0 = tle.inclination.toDouble.toRadians.as[F]
-      val pa = tle.argumentOfPeriapsis.toDouble.toRadians.as[F]
-      val raan = tle.rightAscension.toDouble.toRadians.as[F]
-      val meanAnomaly =  tle.meanAnomaly.toDouble.toRadians.as[F]
-      def meanMotion = tle.meanMotion.toDouble.as[F]
-      val year = tle.year
-      val bStar = tle.atmosphericDragCoeficient.toDouble.as[F]
-    
-      // in julian days
-      val epoch : F = {
-        val mdhms = days2mdhms(tle.year, tle.epoch.toDouble)
-        (jday(tle.year, mdhms._1, mdhms._2, mdhms._3, mdhms._4, mdhms._5) - 2433281.5).as[F]
-      }
-      val ω0 = pa
-      val Ω0 = raan
-      val M0 = meanAnomaly    
-      val radpm0 = revPerDay2RadPerMin(meanMotion)
-  
-      TEME.SGPElems[F](radpm0,e0,i0,pa,raan,M0,bStar,epoch)
-    }
-    
-    def revPerDay2RadPerMin[F: Field: Trig](rpd: F) : F = 2 * pi * rpd / 1440 
-
-  }
-     
+  def revPerDay2RadPerMin[F: Field](rpd: F) : F = 2 * pi * rpd / 1440 
+   
   // use old way of finding gst
   // count integer number of days from 0 jan 1970
   def oldGst(epoch: Double) : Double = {
@@ -63,8 +46,7 @@ package object tle {
    }
    
 
-/* -----------------------------------------------------------------------------
-*
+/**
 *                           function gstime
 *
 *  this function finds the greenwich sidereal time.
@@ -87,9 +69,9 @@ package object tle {
 *
 *  references    :
 *    vallado       2004, 191, eq 3-45
-* --------------------------------------------------------------------------- */
+*/
 
-def  gstime[F : Field: NRoot : Order: Trig](jdut1: F) : F = {
+def  gstime[F : Field: Order](jdut1: F) : F = {
      val twopi = (2 * pi).as[F]
      val deg2rad = pi / 180
 
@@ -105,8 +87,7 @@ def  gstime[F : Field: NRoot : Order: Trig](jdut1: F) : F = {
    }  // end gstime
   
 
-/* -----------------------------------------------------------------------------
-*
+/**
 *                           procedure jday
 *
 *  this procedure finds the julian date given the year, month, day, and time.
@@ -136,7 +117,7 @@ def  gstime[F : Field: NRoot : Order: Trig](jdut1: F) : F = {
 *  references    :
 *    vallado       2007, 189, alg 14, ex 3-14
 *
-* --------------------------------------------------------------------------- */
+*/
 
 def jday( year : Int,  mon : Int,  day : Int,  hr : Int,  minute : Int, sec : Double) : Double =
      367 * year -
@@ -147,8 +128,7 @@ def jday( year : Int,  mon : Int,  day : Int,  hr : Int,  minute : Int, sec : Do
           // - 0.5*sgn(100.0*year + mon - 190002.5) + 0.5
      // end jday
 
-/* -----------------------------------------------------------------------------
-*
+/**
 *                           procedure days2mdhms
 *
 *  this procedure converts the day of the year, days, to the equivalent month
@@ -182,7 +162,7 @@ def jday( year : Int,  mon : Int,  day : Int,  hr : Int,  minute : Int, sec : Do
 *
 *  coupling      :
 *    none.
-* --------------------------------------------------------------------------- */
+*/
 
 def  days2mdhms(year: Int, days : Double) = {
      
@@ -215,8 +195,7 @@ def  days2mdhms(year: Int, days : Double) = {
   (mon, day, hr, minute, sec)
   }  // end days2mdhms
 
-/* -----------------------------------------------------------------------------
-*
+/**
 *                           procedure invjday
 *
 *  this procedure finds the year, month, day, hour, minute and second
@@ -253,7 +232,7 @@ def  days2mdhms(year: Int, days : Double) = {
 *
 *  references    :
 *    vallado       2007, 208, alg 22, ex 3-13
-* --------------------------------------------------------------------------- */
+*/
 
   def  invjday(jd: Double) : (Int, Int, Int, Int, Int, Double) = {
 
