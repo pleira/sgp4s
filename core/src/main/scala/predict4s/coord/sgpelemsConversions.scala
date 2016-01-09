@@ -1,30 +1,24 @@
-package predict4s.tle
+package predict4s.coord
 
 import spire.algebra._
 import spire.math._
 import spire.implicits._
-import scala.{ specialized => spec }
 import spire.syntax.primitives._
 
-case class SGPElems[F](
-    n : F, // mean motion 
-    e : F, // eccentricity
-    I : F, // inclination
-    ω : F, // argument Of perigee
-    Ω : F, // right ascension ascending node
-    M : F, // mean anomaly
-    a : F, // semimajor axis (apogee)
-    bStar : F, // atmospheric Drag Coeficient
-    epoch : F) // epoch time in days from jan 0, 1950. 0 hr 
+case class AnomalyState[F](E : F, cosE: F, sinE: F, ecosE: F, esinE: F) {
+  // define alternative methods to allow expressing a different Anomaly U (not the Eccentric Anomaly)
+  def U = E; def cosU: F = cosE; def sinU: F = sinE; def ecosU: F = ecosE; def esinU: F = esinE;
+}
 
+case class AuxVariables[F](s: F, c: F, p: F, κ: F, σ: F, n: F, β: F, sin2f: F, cos2f: F)
 
-object SGPElems {
+object SGPElemsConversions {
  
   /**
    * Builds SGPElems with original mean motion (n0'', n0dp) and semimajor axis (a0'' , a0dp).
    * 
    */  
-  def sgpElemsAndContext[F: Field: Trig: NRoot: Order](tle: TLE)(implicit wgs: SGPConstants[F]) 
+  def sgpElemsAndContext[F: Field: Trig: NRoot: Order](tle: TLE, wgs: SGPConstants[F]) 
       :  (SGPElems[F], Context0[F]) = { 
     val e0 = tle.eccentricity.toDouble.as[F]
     val i0 = tle.inclination.toDouble.toRadians.as[F]
@@ -36,13 +30,13 @@ object SGPElems {
     val bStar = tle.atmosphericDragCoeficient.toDouble.as[F]
     // in julian days
     val epoch : F = {
-      val mdhms = days2mdhms(tle.year, tle.epoch.toDouble)
-      (jday(tle.year, mdhms._1, mdhms._2, mdhms._3, mdhms._4, mdhms._5) - 2433281.5).as[F]
+      val mdhms = TimeUtils.days2mdhms(tle.year, tle.epoch.toDouble)
+      (TimeUtils.jday(tle.year, mdhms._1, mdhms._2, mdhms._3, mdhms._4, mdhms._5) - 2433281.5).as[F]
     }
     val ω0 = pa
     val Ω0 = raan
     val M0 = meanAnomaly    
-    val radPerMin0 = revPerDay2RadPerMin(meanMotionPerDay)
+    val radPerMin0 = TimeUtils.revPerDay2RadPerMin(meanMotionPerDay)
     //val context0 = Context0(i0, e0)
     val elem0Ctx = calcContextAndOriginalMotionAndSemimajorAxis(e0,i0,ω0,Ω0,M0, bStar,epoch, radPerMin0, wgs)
     elem0Ctx
@@ -78,44 +72,44 @@ object SGPElems {
     val a0dp = (KE / n0dp) fpow (2.as[F]/3.as[F])  // a0   / (1 - δ0)
     (n0dp, a0dp)
   }
-}
-
-case class Context0[F: Field: NRoot : Trig](
-    a0: F, `e²`: F,s: F,c: F,`c²`: F, x3thm1: F,β0: F,`β0²`: F,`β0³`: F, private val wgs: SGPConstants[F]) {
-
-  def cosI0      = c 
-  def `cos²I0`   = `c²`
-  def θ          = c
-  def `θ²`       = `cos²I0`
-  def `θ³`       = cosI0 * `cos²I0`
-  def `θ⁴`       = `cos²I0` * `cos²I0`
-  def θsq        = `cos²I0`
-  def sinI0      = s
-  // def sinio      = s
-
-  val `β0⁴`      = `β0²`*`β0²`
-  def e0sq       = e*e
-  def β0sq       = `β0²`
-  def β0to3      = `β0³`
-  def β0to4      = `β0⁴`
-  // def rteosq     = β0sq
-  def omeosq     = β0sq
-  def polyδ1 = poly"-134/81x^3 - x^2 - 1/3x + 1" 
+   
+  def sgpelems2SpecialPolarNodal[F: Field: Trig: NRoot: Order](eaState: AnomalyState[F], secularElem : SGPElems[F], wgs: SGPConstants[F]) = {
+    import eaState._ 
+    import secularElem.{a,I,e,n,ω,Ω}
+    import wgs.twopi
     
-  val `s²` : F = s*s
-  val p : F = a0 * `β0²` // a0 * (1 - `e²`) // semilatus rectum , which also is G²/μ, with G as the Delauney's action, the total angular momentum
-  val `p²` = p*p
-  val `p⁴` = `p²`*`p²`
-  val `1/p²` = 1/`p²`
-  val `1/p⁴` = 1/`p⁴`
-  import wgs.{aE=>α,J2,`J2/J3`,`J3/J2`}
-  val `α/p` : F = α/p
-  val ϵ2 : F = -J2*(`α/p`**2) / 4
-  val ϵ3 : F = (`J3/J2`)*`α/p` / 2      // or (`C30/C20`)*`α/p` / 2   
-// FIXME  val η : F = β0  // (1 - `e²`).sqrt           // eccentricity function G/L, with G as the Delauney's action, the total angular momentum , and L = √(μ a)
-//  val x3thm1     = 3*`c²` - 1
-  val con41      = x3thm1
-  val con42      = 1 - 5*`c²`
-  val x1mth2     = 1 - `c²`
-  val x7thm1 : F = 7*`c²` - 1     
+    val `e²` = e*e
+    val p = a*(1 - `e²`)  // semilatus rectum , as MU=1, p=Z²
+    val β = sqrt(1 - `e²`) 
+    if (p < 0.as[F]) throw new Exception("p: " + p)
+    val `√p` = sqrt(p)  
+    val `√a` = sqrt(a)
+
+    val r = a * (1 - ecosE)        // r´        
+    val R = sqrt(a) / r * esinE     // R´ = L/r *esinE, L=sqrt(nu*a), MU=1 in SGP4 variables, later applied
+    val Θ = sqrt(a) * β            // MU=1 
+    val numer = β * sinE
+    val denom = (cosE - e)
+    val sinf = a/r*numer
+    val cosf = a/r*denom
+    val esinf = e*sinf
+    val ecosf = e*cosf
+    val f = atan2(sinf, cosf)
+    //val f = trueAnomaly(eaState, e)
+    val θ0to2pi = f + ω 
+    val θ = if (θ0to2pi > pi.as[F])  θ0to2pi - twopi else θ0to2pi 
+    //val N = H
+//    val av = AuxVariables(sin(I), cos(I), p, ecosf, esinf, n, β, sin2f, cos2f)
+    val av = AuxVariables(sin(I), cos(I), p, ecosf, esinf, n, β, 0.as[F], 0.as[F])
+    
+    // do check
+    {
+    import av._
+    assert(abs(κ - (av.p/r - 1)) < 1E-12.as[F] ) 
+    assert(abs(σ - (av.p*R/Θ)) < 1E-12.as[F])
+    }
+    
+    (SpecialPolarNodal(I,θ,Ω,r,R,Θ/r), av) 
+  }
+  
 }

@@ -1,4 +1,4 @@
-package predict4s
+package predict4s.coord
 
 import scala.Vector
 
@@ -16,16 +16,12 @@ import spire.math.floor
 import spire.math.pi
 import spire.syntax.primitives.DoubleAs
 import spire.syntax.primitives.IntAs
-import predict4s.refsystem.ReferenceSystem
 
-package object tle {
+
+object TimeUtils {
     
-  /**
-   *  True equator, mean equinox (TEME)
-   *  
-   *  Transformations done in this reference system.
-   */
-  object TEME extends ReferenceSystem 
+
+ 
 
   def revPerDay2RadPerMin[F: Field](rpd: F) : F = 2 * pi * rpd / 1440 
    
